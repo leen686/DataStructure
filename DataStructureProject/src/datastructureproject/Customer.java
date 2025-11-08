@@ -4,13 +4,15 @@ public class Customer {
     private int customerId;
     private String name;
     private String email;
-    private LinkedList<Integer> orders; // List of order IDs
+    private LinkedList<Integer> orders;
+    private LinkedList<Review> reviews;
 
     public Customer(int customerId, String name, String email) {
         this.customerId = customerId;
         this.name = name;
         this.email = email;
         this.orders = new LinkedList<>();
+        this.reviews = new LinkedList<>();
     }
 
     // ============ Getters ============
@@ -29,6 +31,10 @@ public class Customer {
     public LinkedList<Integer> getOrders() { 
         return orders; 
     }
+    
+    public LinkedList<Review> getReviews() {
+        return reviews;
+    }
 
     // ============ Setters ============
     public void setCustomerId(int customerId) { 
@@ -43,12 +49,10 @@ public class Customer {
         this.email = email; 
     }
 
-    // ============ Order Management Operations ============
+    // ============ Order Management ============
     
-    // University Requirement: "Place a new order for a specific customer"
     public void placeOrder(int orderId) {
         if (!orders.empty()) {
-            // Check for duplicates
             orders.findFirst();
             while (true) {
                 if (orders.retrieve() == orderId) {
@@ -80,23 +84,6 @@ public class Customer {
         return false;
     }
 
-    public boolean hasOrder(int orderId) {
-        if (orders.empty()) {
-            return false;
-        }
-
-        orders.findFirst();
-        while (true) {
-            if (orders.retrieve() == orderId) {
-                return true;
-            }
-            if (orders.last()) break;
-            orders.findNext();
-        }
-        return false;
-    }
-
-    // University Requirement: "View order history"
     public void viewOrderHistory(InventorySystem system) {
         if (orders.empty()) {
             System.out.println("No orders found for customer " + customerId);
@@ -148,22 +135,14 @@ public class Customer {
         return total;
     }
 
-    public LinkedList<Integer> findOrdersByStatus(InventorySystem system, String status) {
-        LinkedList<Integer> filteredOrders = new LinkedList<>();
-        if (!orders.empty()) {
-            orders.findFirst();
-            while (true) {
-                int orderId = orders.retrieve();
-                Order order = system.findOrder(orderId);
-                if (order != null && order.getStatus().equalsIgnoreCase(status)) {
-                    filteredOrders.addLast(orderId);
-                }
-                
-                if (orders.last()) break;
-                orders.findNext();
-            }
-        }
-        return filteredOrders;
+    // ============ Review Management ============
+    
+    public void addReview(Review review) {
+        reviews.insert(review);
+    }
+    
+    public LinkedList<Review> getAllReviews() {
+        return reviews;
     }
 
     // ============ Validation ============
@@ -174,7 +153,7 @@ public class Customer {
                email != null && email.contains("@");
     }
 
-    // ============ Display Methods ============
+    // ============ Display ============
     
     public void displaySummary() {
         System.out.println("Customer ID: " + customerId);

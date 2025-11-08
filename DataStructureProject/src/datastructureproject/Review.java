@@ -1,57 +1,91 @@
 package datastructureproject;
 
-import java.io.File;
-import java.util.Scanner;
-
 public class Review {
-    
-    private String comment;
     private int reviewId;
-    private int productId; // for linking with product class
-    private int customerId; // for linking with customer class
-    private int rating; 
+    private int productId;
+    private int customerId;
+    private int rating;
+    private String comment;
     
-   // constructor
-    public Review(String c ,int reviewId,int productId,  int customerId, int rating) {
-       
-        comment = c;
+    public Review(int reviewId, int productId, int customerId, int rating, String comment) {
         this.reviewId = reviewId;
-        this. productId =  productId;
+        this.productId = productId;
         this.customerId = customerId;
         this.rating = rating;
-       
-    }
-    
-    // for editing the review
-public void editReview (Review p) {
-         this.reviewId = p.reviewId;
-        this. productId = p. productId;
-        this.customerId = p.customerId;
-        this.rating = p.rating;
-        this.comment = p.comment;
+        this.comment = comment;
     }
 
-    // setters and getters
-    public int getReviewId() { return reviewId; }
-     public int getProductId() { return productId; }
-     public int getCustomerId() { return customerId; }
-    public int getRating() { return rating; }
-    public String getComment() { return comment; }
+    // ============ Getters ============
     
+    public int getReviewId() { 
+        return reviewId; 
+    }
+    
+    public int getProductId() { 
+        return productId; 
+    }
+    
+    public int getCustomerId() { 
+        return customerId; 
+    }
+    
+    public int getRating() { 
+        return rating; 
+    }
+    
+    public String getComment() { 
+        return comment; 
+    }
 
-    public void setRating(int r) { this.rating = r; }
-    public void setComment(String c) { this.comment = c; }
+    // ============ Setters ============
+    
+    public void setReviewId(int reviewId) {
+        this.reviewId = reviewId;
+    }
+    
+    public void setProductId(int productId) {
+        this.productId = productId;
+    }
+    
+    public void setCustomerId(int customerId) {
+        this.customerId = customerId;
+    }
+    
+    public void setRating(int rating) { 
+        if (rating >= 1 && rating <= 5) {
+            this.rating = rating;
+        } else {
+            System.out.println("Rating must be between 1 and 5");
+        }
+    }
+    
+    public void setComment(String comment) { 
+        this.comment = comment; 
+    }
 
+    // ============ Validation ============
     
+    public boolean isValidReview() {
+        return reviewId > 0 &&
+               productId > 0 &&
+               customerId > 0 &&
+               rating >= 1 && rating <= 5 &&
+               comment != null;
+    }
+
+    // ============ Display ============
     
-    // display info 
     public void display() {
-        System.out.println("Review ID: " + reviewId);
-         System.out.println("product ID: " + productId);
-        System.out.println("Customer ID: " + customerId);
-        System.out.println("Rating: " + rating + "/5");
-        System.out.println("Comment: " + comment);
-        System.out.println("---------------------------------");
+        System.out.println("  Review ID: " + reviewId);
+        System.out.println("  Customer ID: " + customerId);
+        System.out.println("  Rating: " + rating + "/5");
+        System.out.println("  Comment: " + comment);
     }
 
+    @Override
+    public String toString() {
+        return String.format("Review[ID:%d, Product:%d, Customer:%d, Rating:%d/5]",
+                reviewId, productId, customerId, rating);
+    }
 }
+

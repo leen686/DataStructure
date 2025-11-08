@@ -1,100 +1,133 @@
-
 package datastructureproject;
-
-import java.io.File;
-import java.util.Scanner;
 
 public class Product {
     private int productId;
     private String name;
     private double price;
     private int stock;
-    private LinkedList<Review> reviews = new LinkedList<>();
+    private LinkedList<Review> reviews;
     
     public Product(int productId, String name, double price, int stock) {
         this.productId = productId;
         this.name = name;
         this.price = price;
         this.stock = stock;
-
-    }
-    public void UpdateProduct(Product p) {
-        this.productId = p.productId;
-        this.name = p.name;
-        this.price = p.price;
-        this.stock = p.stock;
-        this.reviews = p.reviews;
+        this.reviews = new LinkedList<>();
     }
 
+    // ============ Getters ============
+    
     public int getProductId() { 
-        return productId; }
+        return productId; 
+    }
     
     public String getName() { 
-        return name; }
+        return name; 
+    }
     
     public double getPrice() {
-        return price; }
+        return price; 
+    }
     
     public int getStock() { 
-        return stock; }
-
-    public void setPrice(double price) { 
-        this.price = price; }
+        return stock; 
+    }
     
-    public void setStock(int stock)  {
-        this.stock = stock; }
+    public LinkedList<Review> getReviews() {
+        return reviews;
+    }
 
+    // ============ Setters ============
+    
+    public void setProductId(int productId) {
+        this.productId = productId;
+    }
+    
+    public void setName(String name) {
+        this.name = name;
+    }
+    
+    public void setPrice(double price) { 
+        this.price = price; 
+    }
+    
+    public void setStock(int stock) {
+        this.stock = stock; 
+    }
+
+    // ============ Review Management ============
+    
     public void addReview(Review review) {        
         reviews.insert(review);
     }
 
     public double getAverageRating() {
-        if (reviews.empty()) return 0 ;
+        if (reviews.empty()) {
+            return 0.0;
+        }
         
         reviews.findFirst();
         double sum = 0;
         int count = 0;
         
-        while (!reviews.last()) {
-            sum = sum + reviews.retrieve().getRating();
+        while (true) {
+            sum += reviews.retrieve().getRating();
             count++;
+            if (reviews.last()) break;
             reviews.findNext();
         }
         
-         sum = sum + reviews.retrieve().getRating();
-            count++ ; // for last node
-        
-        double avg = sum / count ;
-        return avg ;
+        return sum / count;
     }
 
+    // ============ Stock Management ============
+    
+    public boolean isOutOfStock() {
+        return stock == 0;
+    }
+    
+    public void updateStock(int newStock) {
+        this.stock = newStock;
+    }
+
+    // ============ Validation ============
+    
+    public boolean isValidProduct() {
+        return productId > 0 && 
+               name != null && !name.trim().isEmpty() &&
+               price >= 0 &&
+               stock >= 0;
+    }
+
+    // ============ Display ============
+    
+    public void display() {
+        System.out.println("Product ID: " + productId);
+        System.out.println("Name: " + name);
+        System.out.println("Price: $" + String.format("%.2f", price));
+        System.out.println("Stock: " + stock);
+        System.out.println("Average Rating: " + String.format("%.2f", getAverageRating()));
+    }
+    
     public void displayReviews() {
-        
         System.out.println("Reviews for " + name + ":");
         if (reviews.empty()) {
-            System.out.println(" No customer have review this product yet");}
+            System.out.println("  No reviews yet");
+            return;
+        }
         
-        else { 
-            
-            reviews.findFirst();
-            while (!reviews.last()) {
-                reviews.retrieve().display();
-                reviews.findNext();
-            }
-            
-            reviews.retrieve().display(); // for last node 
-            
+        reviews.findFirst();
+        while (true) {
+            reviews.retrieve().display();
+            if (reviews.last()) break;
+            reviews.findNext();
         }
     }
 
-    public void display() {
-        
-        System.out.println("Product ID:" + productId);
-        System.out.println(" Product Name: " + name);
-        System.out.println("Product Price:" + price);
-        System.out.println("Product in Stock:" + stock);
-        System.out.println("Average Rating for Product : " + getAverageRating() );
-    } }
-    
-    
+    @Override
+    public String toString() {
+        return String.format("Product[ID:%d, Name:%s, Price:$%.2f, Stock:%d, Avg Rating:%.2f]",
+                productId, name, price, stock, getAverageRating());
+    }
+}
 

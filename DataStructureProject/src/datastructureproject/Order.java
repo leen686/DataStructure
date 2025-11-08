@@ -4,11 +4,11 @@ import java.time.LocalDate;
 
 public class Order {
     private int orderId;
-    private int customerId; // Customer reference as required by university
-    private LinkedList<Integer> products; // List of product IDs
+    private int customerId;
+    private LinkedList<Integer> products;
     private double totalPrice;
     private LocalDate orderDate;
-    private String status; // pending, shipped, delivered, canceled
+    private String status;
 
     public Order(int orderId, int customerId, String productsData, 
                  double totalPrice, LocalDate orderDate, String status) {
@@ -63,7 +63,6 @@ public class Order {
         this.orderDate = orderDate; 
     }
 
-    // University Requirement: "Update order status"
     public void setStatus(String status) { 
         if (isValidStatus(status)) {
             this.status = status;
@@ -73,9 +72,8 @@ public class Order {
         }
     }
 
-    // ============ Product Management Operations ============
+    // ============ Product Management ============
     
-    // Process products string and add to list (Format: "101;102;103")
     private void processProducts(String productsData) {
         if (productsData != null && !productsData.trim().isEmpty()) {
             String[] productsArray = productsData.split(";");
@@ -92,7 +90,6 @@ public class Order {
 
     public void addProduct(int productId) {
         if (!products.empty()) {
-            // Check for duplicates
             products.findFirst();
             while (true) {
                 if (products.retrieve() == productId) {
@@ -139,13 +136,6 @@ public class Order {
         return false;
     }
 
-    public void clearAllProducts() {
-        while (!products.empty()) {
-            products.findFirst();
-            products.remove();
-        }
-    }
-
     // ============ Status Operations ============
     
     private boolean isValidStatus(String status) {
@@ -161,7 +151,6 @@ public class Order {
                status.equalsIgnoreCase("shipped");
     }
 
-    // University Requirement: "Cancel order"
     public void cancelOrder() {
         if (canBeCanceled()) {
             status = "canceled";
@@ -197,35 +186,11 @@ public class Order {
         return count;
     }
 
-    public double calculateAverageProductPrice() {
-        int productCount = countProducts();
-        return productCount > 0 ? totalPrice / productCount : 0.0;
-    }
-
-    // ============ Search Operations ============
-    
-    public LinkedList<Integer> findProductsInRange(int startId, int endId) {
-        LinkedList<Integer> result = new LinkedList<>();
-        if (!products.empty()) {
-            products.findFirst();
-            while (true) {
-                int productId = products.retrieve();
-                if (productId >= startId && productId <= endId) {
-                    result.addLast(productId);
-                }
-                if (products.last()) break;
-                products.findNext();
-            }
-        }
-        return result;
-    }
-
-    // University Requirement: "All Orders between two dates"
     public boolean isBetweenDates(LocalDate startDate, LocalDate endDate) {
         return !orderDate.isBefore(startDate) && !orderDate.isAfter(endDate);
     }
 
-    // ============ Display Methods ============
+    // ============ Display ============
     
     public void displayOrderDetails() {
         System.out.println("Order ID: " + orderId);
@@ -233,22 +198,13 @@ public class Order {
         System.out.println("Products: " + formatProductsList());
         System.out.println("Total Price: $" + String.format("%.2f", totalPrice));
         System.out.println("Order Date: " + orderDate);
-        System.out.println("Status: " + getStatusIcon() + " " + status);
+        System.out.println("Status: " + status);
         System.out.println("Number of Products: " + countProducts());
     }
 
     public void displayBriefInfo() {
         System.out.println(orderId + " - Customer:" + customerId + " - $" + 
                           String.format("%.2f", totalPrice) + " - " + status);
-    }
-
-    private String getStatusIcon() {
-        String lower = status.toLowerCase();
-        if (lower.equals("delivered")) return "[✓]";
-        if (lower.equals("pending")) return "[⏳]";
-        if (lower.equals("shipped")) return "[🚚]";
-        if (lower.equals("canceled")) return "[✗]";
-        return "[?]";
     }
 
     private String formatProductsList() {
@@ -273,3 +229,4 @@ public class Order {
                 orderId, customerId, countProducts(), totalPrice, orderDate, status);
     }
 }
+
