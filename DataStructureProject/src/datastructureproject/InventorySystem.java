@@ -7,14 +7,14 @@ public class InventorySystem {
     // Assume these LinkedLists are already declared:
     private LinkedList<Customer> customers;
     private LinkedList<Order> orders;
-  //  private LinkedList<Product> products;
+    private LinkedList<Product> products;
    // private LinkedList<Review> reviews;
 
     // Constructor
     public InventorySystem() {
         this.customers = new LinkedList<>();
         this.orders = new LinkedList<>();
-      //  this.products = new LinkedList<>();
+        this.products = new LinkedList<>();
        // this.reviews = new LinkedList<>();
     }
 
