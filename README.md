@@ -6,9 +6,9 @@ pkg212project/
 ├── LinkedList.java          ✅ DONE
 ├── Customer.java            ✅ DONE
 ├── Order.java               ✅ DONE
-├── InventorySystem.java     ✅ DONE (partial - needs Product & Review)
-├── Product.java             ⏳ TODO (by teammates)
-├── Review.java              ⏳ TODO (by teammates)
+├── InventorySystem.java     ✅ DONE 
+├── Product.java             ✅ Done
+├── Review.java              ✅ Done
 └── Main.java                ⏳ TODO (testing)
 ```
 
@@ -133,8 +133,8 @@ pkg212project/
 
 ---
 
-### ⏳ **5. Product.java** (TODO by teammates)
-**Status:** Not yet implemented  
+### ✅ **5. Product.java** (TODO by teammates)
+**Status:** Complete ✓
 **Expected Attributes:**
 - `int productId`
 - `String name`
@@ -150,8 +150,8 @@ pkg212project/
 
 ---
 
-### ⏳ **6. Review.java** (TODO by teammates)
-**Status:** Not yet implemented  
+### ✅ **6. Review.java** (TODO by teammates)
+**Status:** Complete ✓
 **Expected Attributes:**
 - `int rating` (1-5)
 - `String comment`
@@ -226,8 +226,8 @@ system.cancelOrder(101);
 
 | Component | Status | Files |
 |-----------|--------|-------|
-| Product | ⏳ TODO | Product.java |
-| Review | ⏳ TODO | Review.java |
+| Product | ✅ TODO | Product.java |
+| Review | ✅ TODO | Review.java |
 | InventorySystem (P&R) | ⏳ TODO | Add to InventorySystem.java |
 | Main/Testing | ⏳ TODO | Main.java |
 | CSV Reading | ⏳ TODO | DataLoader.java (optional) |
@@ -275,8 +275,8 @@ system.cancelOrder(101);
 ### Classes & Attributes
 - ✅ Customer: customerId, name, email, orders list
 - ✅ Order: orderId, customer reference, products list, totalPrice, orderDate, status
-- ⏳ Product: productId, name, price, stock, reviews list
-- ⏳ Review: rating, comment
+- ✅ Product: productId, name, price, stock, reviews list
+- ✅ Review: rating, comment
 
 ### Operations
 - ✅ Register new customer
@@ -285,11 +285,11 @@ system.cancelOrder(101);
 - ✅ Create/cancel order
 - ✅ Update order status
 - ✅ Search order by ID (linear)
-- ⏳ Add/remove/update products
-- ⏳ Search product by ID or name (linear)
-- ⏳ Track out-of-stock products
-- ⏳ Add/edit review
-- ⏳ Get average rating
+- ✅ Add/remove/update products
+- ✅ Search product by ID or name (linear)
+- ✅ Track out-of-stock products
+- ✅ Add/edit review
+- ✅ Get average rating
 
 ### Queries
 - ✅ All Orders between two dates
@@ -311,8 +311,8 @@ system.cancelOrder(101);
 2. ✅ Copy Customer.java
 3. ✅ Copy Order.java
 4. ✅ Copy InventorySystem.java (Customer & Order methods)
-5. ⏳ Wait for teammates to finish Product.java
-6. ⏳ Wait for teammates to finish Review.java
+5. ✅ Wait for teammates to finish Product.java
+6. ✅ Wait for teammates to finish Review.java
 7. ⏳ Integrate all parts
 8. ⏳ Test thoroughly
 9. ⏳ Write report with complexity analysis
