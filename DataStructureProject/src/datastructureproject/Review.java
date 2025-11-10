@@ -65,7 +65,7 @@ public class Review {
 
     // ============ Validation ============
     
-    public boolean isValidReview() {
+    public boolean isValidReview() { 
         return reviewId > 0 &&
                productId > 0 &&
                customerId > 0 &&
@@ -75,7 +75,7 @@ public class Review {
 
     // ============ Display ============
     
-    public void display() {
+    public void display() { 
         System.out.println("  Review ID: " + reviewId);
         System.out.println("  Customer ID: " + customerId);
         System.out.println("  Rating: " + rating + "/5");

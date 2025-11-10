@@ -92,7 +92,7 @@ public class Product {
 
     // ============ Validation ============
     
-    public boolean isValidProduct() {
+    public boolean isValidProduct() { 
         return productId > 0 && 
                name != null && !name.trim().isEmpty() &&
                price >= 0 &&
@@ -101,7 +101,7 @@ public class Product {
 
     // ============ Display ============
     
-    public void display() {
+    public void display() { 
         System.out.println("Product ID: " + productId);
         System.out.println("Name: " + name);
         System.out.println("Price: $" + String.format("%.2f", price));
@@ -109,7 +109,7 @@ public class Product {
         System.out.println("Average Rating: " + String.format("%.2f", getAverageRating()));
     }
     
-    public void displayReviews() {
+    public void displayReviews() { 
         System.out.println("Reviews for " + name + ":");
         if (reviews.empty()) {
             System.out.println("  No reviews yet");

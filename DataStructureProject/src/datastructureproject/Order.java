@@ -192,7 +192,7 @@ public class Order {
 
     // ============ Display ============
     
-    public void displayOrderDetails() {
+    public void displayOrderDetails() { 
         System.out.println("Order ID: " + orderId);
         System.out.println("Customer ID: " + customerId);
         System.out.println("Products: " + formatProductsList());
