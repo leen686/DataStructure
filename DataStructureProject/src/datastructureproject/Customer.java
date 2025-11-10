@@ -84,25 +84,25 @@ public class Customer {
         return false;
     }
 
-    public void viewOrderHistory(InventorySystem system) {
-        if (orders.empty()) {
-            System.out.println("No orders found for customer " + customerId);
-            return;
-        }
-
-        System.out.println("=== Order History for Customer: " + name + " ===");
-        orders.findFirst();
-        while (true) {
-            int orderId = orders.retrieve();
-            Order order = system.findOrder(orderId);
-            if (order != null) {
-                order.displayBriefInfo();
-            }
-            
-            if (orders.last()) break;
-            orders.findNext();
-        }
+   public void viewOrderHistory(InventorySystem system) {
+    if (orders.empty()) {                                // Line 1
+        System.out.println("No orders found");           // Line 2
+        return;                                          // Line 3
     }
+
+    System.out.println("=== Order History ===");        // Line 4
+    orders.findFirst();                                  // Line 5
+    while (true) {                                       // Line 6
+        int orderId = orders.retrieve();                 // Line 7
+        Order order = system.findOrder(orderId);         // Line 8: O(o)
+        if (order != null) {                             // Line 9
+            order.displayBriefInfo();                    // Line 10
+        }
+        
+        if (orders.last()) break;                        // Line 11
+        orders.findNext();                               // Line 12
+    }
+}
 
     public int countOrders() {
         int count = 0;

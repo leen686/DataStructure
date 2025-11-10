@@ -61,25 +61,24 @@ public class Product {
         reviews.insert(review);
     }
 
-    public double getAverageRating() {
-        if (reviews.empty()) {
-            return 0.0;
-        }
-        
-        reviews.findFirst();
-        double sum = 0;
-        int count = 0;
-        
-        while (true) {
-            sum += reviews.retrieve().getRating();
-            count++;
-            if (reviews.last()) break;
-            reviews.findNext();
-        }
-        
-        return sum / count;
+   public double getAverageRating() {
+    if (reviews.empty()) {                               // Line 1
+        return 0.0;                                      // Line 2
     }
-
+    
+    reviews.findFirst();                                 // Line 3
+    double sum = 0;                                      // Line 4
+    int count = 0;                                       // Line 5
+    
+    while (true) {                                       // Line 6
+        sum += reviews.retrieve().getRating();           // Line 7
+        count++;                                         // Line 8
+        if (reviews.last()) break;                       // Line 9
+        reviews.findNext();                              // Line 10
+    }
+    
+    return sum / count;                                  // Line 11
+}
     // ============ Stock Management ============
     
     public boolean isOutOfStock() {
