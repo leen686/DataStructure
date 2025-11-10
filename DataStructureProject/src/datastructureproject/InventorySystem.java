@@ -238,8 +238,7 @@ public class InventorySystem {
         return true;
     }
 
-    // University Requirement: "Search by ID" - Linear Search
-    // Time Complexity: O(n)
+    //  Requirement: "Search by ID" - Linear Search
     public Product findProductById(int productId) {
         if (products.empty()) {
             return null;
@@ -257,8 +256,7 @@ public class InventorySystem {
         return null;
     }
 
-    // University Requirement: "Search by name" - Linear Search
-    // Time Complexity: O(n)
+    //  Requirement: "Search by name" - Linear Search
     public Product findProductByName(String name) {
         if (products.empty()) {
             return null;
@@ -276,7 +274,7 @@ public class InventorySystem {
         return null;
     }
 
-    // University Requirement: "Remove product"
+    //  Requirement: "Remove product"
     public boolean removeProduct(int productId) {
         if (products.empty()) {
             return false;
@@ -295,7 +293,7 @@ public class InventorySystem {
         return false;
     }
 
-    // University Requirement: "Update product"
+    //  Requirement: "Update product"
     public boolean updateProduct(int productId, String newName, double newPrice, int newStock) {
         Product product = findProductById(productId);
         if (product == null) {
@@ -317,7 +315,7 @@ public class InventorySystem {
         return true;
     }
 
-    // University Requirement: "Track out-of-stock products"
+    //  Requirement: "Track out-of-stock products"
     // Time Complexity: O(n)
     public LinkedList<Product> getOutOfStockProducts() {
         LinkedList<Product> outOfStock = new LinkedList<>();
@@ -415,7 +413,7 @@ public class InventorySystem {
         return true;
     }
 
-    // University Requirement: "Edit review"
+    //  Requirement: "Edit review"
     public boolean editReview(int reviewId, int newRating, String newComment) {
         if (reviews.empty()) {
             return false;
@@ -652,8 +650,6 @@ public class InventorySystem {
 
     
     // STATISTICS METHODS
-    
-
     public int getTotalCustomers() {
         return customers.size();
     }
