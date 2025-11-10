@@ -17,11 +17,9 @@ public class InventorySystem {
         this.reviews = new LinkedList<>();
     }
 
-    // ============================================================
-    // CUSTOMER OPERATIONS
-    // ============================================================
 
-    // University Requirement: "Register new customer"
+    // CUSTOMER OPERATIONS
+    // Requirement: "Register new customer"
     public boolean registerCustomer(Customer customer) {
         if (customer == null || !customer.isValidCustomer()) {
             System.out.println("Invalid customer data");
@@ -98,11 +96,9 @@ public class InventorySystem {
         }
     }
 
-    // ============================================================
+  
     // ORDER OPERATIONS
-    // ============================================================
-
-    // University Requirement: "Create order"
+    //  Requirement: "Create order"
     public boolean createOrder(Order order) {
         if (order == null || !order.isValidOrder()) {
             System.out.println("Invalid order data");
@@ -133,7 +129,7 @@ public class InventorySystem {
         return true;
     }
 
-    // University Requirement: "Search order by ID"
+    //  Requirement: "Search order by ID"
     public Order findOrder(int orderId) {
         if (orders.empty()) {
             return null;
@@ -151,7 +147,7 @@ public class InventorySystem {
         return null;
     }
 
-    // University Requirement: "Cancel order"
+    //  Requirement: "Cancel order"
     public boolean cancelOrder(int orderId) {
         Order order = findOrder(orderId);
         if (order == null) {
@@ -168,7 +164,7 @@ public class InventorySystem {
         return true;
     }
 
-    // University Requirement: "Update order status"
+    //  Requirement: "Update order status"
     public boolean updateOrderStatus(int orderId, String newStatus) {
         Order order = findOrder(orderId);
         if (order == null) {
@@ -180,8 +176,7 @@ public class InventorySystem {
         return true;
     }
 
-    // University Requirement: "All Orders between two dates"
-    // Time Complexity: O(n)
+    // Requirement: "All Orders between two dates"
     public LinkedList<Order> findOrdersBetweenDates(LocalDate startDate, LocalDate endDate) {
         LinkedList<Order> result = new LinkedList<>();
         
@@ -217,11 +212,9 @@ public class InventorySystem {
         }
     }
 
-    // ============================================================
+    
     // PRODUCT OPERATIONS
-    // ============================================================
-
-    // University Requirement: "Add product"
+    //  Requirement: "Add product"
     public boolean addProduct(Product product) {
         if (product == null || !product.isValidProduct()) {
             System.out.println("Invalid product data");
@@ -380,11 +373,8 @@ public class InventorySystem {
         }
     }
 
-    // ============================================================
     // REVIEW OPERATIONS
-    // ============================================================
-
-    // University Requirement: "Add review"
+    //  Requirement: "Add review"
     public boolean addReview(Review review) {
         if (review == null || !review.isValidReview()) {
             System.out.println("Invalid review data");
@@ -452,8 +442,7 @@ public class InventorySystem {
         return false;
     }
 
-    // University Requirement: "Extract reviews from a specific customer"
-    // Time Complexity: O(n) where n is number of reviews
+    // Requirement: "Extract reviews from a specific customer"
     public LinkedList<Review> getCustomerReviews(int customerId) {
         LinkedList<Review> customerReviews = new LinkedList<>();
         
@@ -492,13 +481,9 @@ public class InventorySystem {
         }
     }
 
-    // ============================================================
-    // ADVANCED QUERY REQUIREMENTS
-    // ============================================================
+ 
 
-    // University Requirement: "Suggest top 3 products by average rating"
-    // Time Complexity: O(n²) - n products, each checking reviews
-    // Space Complexity: O(n)
+    //  Requirement: "Suggest top 3 products by average rating"
     public LinkedList<Product> getTop3Products() {
         if (products.empty()) {
             return new LinkedList<>();
@@ -571,8 +556,7 @@ public class InventorySystem {
         }
     }
 
-    // University Requirement: "Common products reviewed by two customers with rating > 4"
-    // Time Complexity: O(n*m) where n,m are review counts for each customer
+    //  Requirement: "Common products reviewed by two customers "
     public LinkedList<Product> getCommonHighRatedProducts(int customer1Id, int customer2Id) {
         LinkedList<Product> commonProducts = new LinkedList<>();
         
@@ -634,10 +618,7 @@ public class InventorySystem {
         }
     }
 
-    // ============================================================
-    // HELPER METHODS
-    // ============================================================
-
+    
     private boolean isProductInList(LinkedList<Product> list, int productId) {
         if (list.empty()) {
             return false;
@@ -667,20 +648,11 @@ public class InventorySystem {
         }
     }
 
-    private void removeOrderReference(int orderId) {
-        if (!customers.empty()) {
-            customers.findFirst();
-            while (true) {
-                customers.retrieve().removeOrder(orderId);
-                if (customers.last()) break;
-                customers.findNext();
-            }
-        }
-    }
+  
 
-    // ============================================================
+    
     // STATISTICS METHODS
-    // ============================================================
+    
 
     public int getTotalCustomers() {
         return customers.size();
@@ -722,15 +694,13 @@ public class InventorySystem {
         System.out.println("Total Products: " + getTotalProducts());
         System.out.println("Total Orders: " + getTotalOrders());
         System.out.println("Total Reviews: " + getTotalReviews());
-        System.out.println("Total Revenue: $" + String.format("%.2f", calculateTotalRevenue()));
+        System.out.println("Total Revenue: $" + calculateTotalRevenue());
         System.out.println("Out of Stock Products: " + getOutOfStockProducts().size());
         System.out.println("========================================");
     }
 
-    // ============================================================
-    // CSV FILE LOADING
-    // ============================================================
 
+    // CSV FILE LOADING
     public void loadCustomersFromCSV(String filename) {
         try {
             File file = new File(filename);
@@ -764,6 +734,7 @@ public class InventorySystem {
     }
 
     public void loadProductsFromCSV(String filename) {
+       
         try {
             File file = new File(filename);
             Scanner scanner = new Scanner(file);
