@@ -22,28 +22,28 @@ public class InventorySystem {
     
     // Requirement: "Register new customer"
     public boolean registerCustomer(Customer customer) {
-    if (customer == null || !customer.isValidCustomer()) { // Line 1
-        System.out.println("Invalid customer data");       // Line 2
-        return false;                                      // Line 3
-    }
-    
-    if (!customers.empty()) {                              // Line 4
-        customers.findFirst();                             // Line 5
-        while (true) {                                     // Line 6
-            if (customers.retrieve().getCustomerId() == 
-                customer.getCustomerId()) {                // Line 7
-                System.out.println("Customer already exists"); // Line 8
-                return false;                              // Line 9
-            }
-            if (customers.last()) break;                   // Line 10
-            customers.findNext();                          // Line 11
+        if (customer == null || !customer.isValidCustomer()) {
+            System.out.println("Invalid customer data");
+            return false;
         }
+        
+        if (!customers.empty()) {
+            customers.findFirst();
+            while (true) {
+                if (customers.retrieve().getCustomerId() == customer.getCustomerId()) {
+                    System.out.println("Customer with ID " + customer.getCustomerId() + " already exists");
+                    return false;
+                }
+                if (customers.last()) break;
+                customers.findNext();
+            }
+        }
+        
+        customers.addLast(customer);
+        System.out.println("Customer registered successfully: " + customer.getName());
+        return true;
     }
-    
-    customers.addLast(customer);                           // Line 12
-    System.out.println("Customer registered");             // Line 13
-    return true;                                           // Line 14
-}
+
     // Linear Search
     public Customer findCustomer(int customerId) {
         if (customers.empty()) {
@@ -102,101 +102,103 @@ public class InventorySystem {
     
     //  Requirement: "Create order"
     public boolean createOrder(Order order) {
-    if (order == null || !order.isValidOrder()) {        // Line 1
-        System.out.println("Invalid order data");        // Line 2
-        return false;                                    // Line 3
-    }
-    
-    Customer customer = findCustomer(order.getCustomerId()); // Line 4: O(c)
-    if (customer == null) {                              // Line 5
-        System.out.println("Customer not found");        // Line 6
-        return false;                                    // Line 7
-    }
-    
-    if (!orders.empty()) {                               // Line 8
-        orders.findFirst();                              // Line 9
-        while (true) {                                   // Line 10
-            if (orders.retrieve().getOrderId() == 
-                order.getOrderId()) {                    // Line 11
-                System.out.println("Order already exists"); // Line 12
-                return false;                            // Line 13
+        if (order == null || !order.isValidOrder()) {
+            System.out.println("Invalid order data");
+            return false;
+        }
+        
+        Customer customer = findCustomer(order.getCustomerId());
+        if (customer == null) {
+            System.out.println("Customer not found: " + order.getCustomerId());
+            return false;
+        }
+        
+        if (!orders.empty()) {
+            orders.findFirst();
+            while (true) {
+                if (orders.retrieve().getOrderId() == order.getOrderId()) {
+                    System.out.println("Order with ID " + order.getOrderId() + " already exists");
+                    return false;
+                }
+                if (orders.last()) break;
+                orders.findNext();
             }
-            if (orders.last()) break;                    // Line 14
-            orders.findNext();                           // Line 15
         }
+        
+        orders.addLast(order);
+        customer.placeOrder(order.getOrderId());
+        System.out.println("Order created successfully: " + order.getOrderId());
+        return true;
     }
-    
-    orders.addLast(order);                               // Line 16
-    customer.placeOrder(order.getOrderId());             // Line 17: O(o)
-    System.out.println("Order created successfully");    // Line 18
-    return true;                                         // Line 19
-}
+
     //  Requirement: "Search order by ID"
-   public Order findOrder(int orderId) {
-    if (orders.empty()) {                                // Line 1
-        return null;                                     // Line 2
-    }
-    
-    orders.findFirst();                                  // Line 3
-    while (true) {                                       // Line 4
-        Order order = orders.retrieve();                 // Line 5
-        if (order.getOrderId() == orderId) {             // Line 6
-            return order;                                // Line 7
+    public Order findOrder(int orderId) {
+        if (orders.empty()) {
+            return null;
         }
-        if (orders.last()) break;                        // Line 8
-        orders.findNext();                               // Line 9
+        
+        orders.findFirst();
+        while (true) {
+            Order order = orders.retrieve();
+            if (order.getOrderId() == orderId) {
+                return order;
+            }
+            if (orders.last()) break;
+            orders.findNext();
+        }
+        return null;
     }
-    return null;                                         // Line 10
-}
+
     //  Requirement: "Cancel order"
-   public boolean cancelOrder(int orderId) {
-    Order order = findOrder(orderId);                    // Line 1: O(o)
-    if (order == null) {                                 // Line 2
-        System.out.println("Order not found");           // Line 3
-        return false;                                    // Line 4
+    public boolean cancelOrder(int orderId) {
+        Order order = findOrder(orderId);
+        if (order == null) {
+            System.out.println("Order not found: " + orderId);
+            return false;
+        }
+        
+        if (!order.canBeCanceled()) {
+            System.out.println("Order cannot be canceled: " + orderId);
+            return false;
+        }
+        
+        order.cancelOrder();
+        return true;
     }
-    
-    if (!order.canBeCanceled()) {                        // Line 5
-        System.out.println("Order cannot be canceled");  // Line 6
-        return false;                                    // Line 7
-    }
-    
-    order.cancelOrder();                                 // Line 8
-    return true;                                         // Line 9
-}
 
     //  Requirement: "Update order status"
     public boolean updateOrderStatus(int orderId, String newStatus) {
-    Order order = findOrder(orderId);                    // Line 1: O(o)
-    if (order == null) {                                 // Line 2
-        System.out.println("Order not found");           // Line 3
-        return false;                                    // Line 4
+        Order order = findOrder(orderId);
+        if (order == null) {
+            System.out.println("Order not found: " + orderId);
+            return false;
+        }
+        
+        order.setStatus(newStatus);
+        return true;
     }
-    
-    order.setStatus(newStatus);                          // Line 5
-    return true;                                         // Line 6
-}
 
     // Requirement: "All Orders between two dates"
-   public LinkedList<Order> findOrdersBetweenDates(LocalDate startDate, LocalDate endDate) {
-    LinkedList<Order> result = new LinkedList<>();       // Line 1
-    
-    if (orders.empty()) {                                // Line 2
-        return result;                                   // Line 3
-    }
-    
-    orders.findFirst();                                  // Line 4
-    while (true) {                                       // Line 5
-        Order order = orders.retrieve();                 // Line 6
-        if (order.isBetweenDates(startDate, endDate)) {  // Line 7
-            result.addLast(order);                       // Line 8
+    public LinkedList<Order> findOrdersBetweenDates(LocalDate startDate, LocalDate endDate) {
+        LinkedList<Order> result = new LinkedList<>();
+        
+        if (orders.empty()) {
+            return result;
         }
-        if (orders.last()) break;                        // Line 9
-        orders.findNext();                               // Line 10
+        
+        orders.findFirst();
+        while (true) {
+            Order order = orders.retrieve();
+            if (order.isBetweenDates(startDate, endDate)) {
+                result.addLast(order);
+            }
+            if (orders.last()) break;
+            orders.findNext();
+        }
+        
+        return result;
     }
-    
-    return result;                                       // Line 11
-}
+
     public void displayAllOrders() {
         if (orders.empty()) {
             System.out.println("No orders found");
@@ -238,41 +240,41 @@ public class InventorySystem {
         return true;
     }
 
-    //  Requirement: "Search by ID" 
+    //  Requirement: "Search by ID" - Linear Search
     public Product findProductById(int productId) {
-    if (products.empty()) {                              // Line 1
-        return null;                                     // Line 2
-    }
-    
-    products.findFirst();                                // Line 3
-    while (true) {                                       // Line 4
-        Product product = products.retrieve();           // Line 5
-        if (product.getProductId() == productId) {       // Line 6
-            return product;                              // Line 7
+        if (products.empty()) {
+            return null;
         }
-        if (products.last()) break;                      // Line 8
-        products.findNext();                             // Line 9
+        
+        products.findFirst();
+        while (true) {
+            Product product = products.retrieve();
+            if (product.getProductId() == productId) {
+                return product;
+            }
+            if (products.last()) break;
+            products.findNext();
+        }
+        return null;
     }
-    return null;                                         // Line 10
-}
 
-    //  Requirement: "Search by name" 
-   public Product findProductByName(String name) {
-    if (products.empty()) {                              // Line 1
-        return null;                                     // Line 2
-    }
-    
-    products.findFirst();                                // Line 3
-    while (true) {                                       // Line 4
-        Product product = products.retrieve();           // Line 5
-        if (product.getName().equalsIgnoreCase(name)) {  // Line 6
-            return product;                              // Line 7
+    //  Requirement: "Search by name" - Linear Search
+    public Product findProductByName(String name) {
+        if (products.empty()) {
+            return null;
         }
-        if (products.last()) break;                      // Line 8
-        products.findNext();                             // Line 9
+        
+        products.findFirst();
+        while (true) {
+            Product product = products.retrieve();
+            if (product.getName().equalsIgnoreCase(name)) {
+                return product;
+            }
+            if (products.last()) break;
+            products.findNext();
+        }
+        return null;
     }
-    return null;                                         // Line 10
-}
 
     //  Requirement: "Remove product"
     public boolean removeProduct(int productId) {
@@ -294,48 +296,49 @@ public class InventorySystem {
     }
 
     //  Requirement: "Update product"
-    public boolean updateProduct(int productId, String newName, 
-                            double newPrice, int newStock) {
-    Product product = findProductById(productId);        // Line 1: O(n)
-    if (product == null) {                               // Line 2
-        System.out.println("Product not found");         // Line 3
-        return false;                                    // Line 4
+    public boolean updateProduct(int productId, String newName, double newPrice, int newStock) {
+        Product product = findProductById(productId);
+        if (product == null) {
+            System.out.println("Product not found: " + productId);
+            return false;
+        }
+        
+        if (newName != null && !newName.trim().isEmpty()) {
+            product.setName(newName);
+        }
+        if (newPrice >= 0) {
+            product.setPrice(newPrice);
+        }
+        if (newStock >= 0) {
+            product.setStock(newStock);
+        }
+        
+        System.out.println("Product updated successfully");
+        return true;
     }
-    
-    if (newName != null && !newName.trim().isEmpty()) {  // Line 5
-        product.setName(newName);                        // Line 6
-    }
-    if (newPrice >= 0) {                                 // Line 7
-        product.setPrice(newPrice);                      // Line 8
-    }
-    if (newStock >= 0) {                                 // Line 9
-        product.setStock(newStock);                      // Line 10
-    }
-    
-    System.out.println("Product updated successfully");  // Line 11
-    return true;                                         // Line 12
-}
+
     //  Requirement: "Track out-of-stock products"
     // Time Complexity: O(n)
     public LinkedList<Product> getOutOfStockProducts() {
-    LinkedList<Product> outOfStock = new LinkedList<>(); // Line 1
-    
-    if (products.empty()) {                              // Line 2
-        return outOfStock;                               // Line 3
-    }
-    
-    products.findFirst();                                // Line 4
-    while (true) {                                       // Line 5
-        Product product = products.retrieve();           // Line 6
-        if (product.isOutOfStock()) {                    // Line 7
-            outOfStock.addLast(product);                 // Line 8
+        LinkedList<Product> outOfStock = new LinkedList<>();
+        
+        if (products.empty()) {
+            return outOfStock;
         }
-        if (products.last()) break;                      // Line 9
-        products.findNext();                             // Line 10
+        
+        products.findFirst();
+        while (true) {
+            Product product = products.retrieve();
+            if (product.isOutOfStock()) {
+                outOfStock.addLast(product);
+            }
+            if (products.last()) break;
+            products.findNext();
+        }
+        
+        return outOfStock;
     }
-    
-    return outOfStock;                                   // Line 11
-}
+
     public void displayOutOfStockProducts() {
         LinkedList<Product> outOfStock = getOutOfStockProducts();
         
@@ -374,89 +377,92 @@ public class InventorySystem {
     
     //  Requirement: "Add review"
     public boolean addReview(Review review) {
-    if (review == null || !review.isValidReview()) {    // Line 1
-        System.out.println("Invalid review data");       // Line 2
-        return false;                                    // Line 3
-    }
-    
-    Customer customer = findCustomer(review.getCustomerId()); // Line 4: O(c)
-    if (customer == null) {                              // Line 5
-        System.out.println("Customer not found");        // Line 6
-        return false;                                    // Line 7
-    }
-    
-    Product product = findProductById(review.getProductId()); // Line 8: O(p)
-    if (product == null) {                               // Line 9
-        System.out.println("Product not found");         // Line 10
-        return false;                                    // Line 11
-    }
-    
-    if (!reviews.empty()) {                              // Line 12
-        reviews.findFirst();                             // Line 13
-        while (true) {                                   // Line 14
-            if (reviews.retrieve().getReviewId() == 
-                review.getReviewId()) {                  // Line 15
-                System.out.println("Review already exists"); // Line 16
-                return false;                            // Line 17
-            }
-            if (reviews.last()) break;                   // Line 18
-            reviews.findNext();                          // Line 19
+        if (review == null || !review.isValidReview()) {
+            System.out.println("Invalid review data");
+            return false;
         }
+        
+        // Verify customer exists
+        Customer customer = findCustomer(review.getCustomerId());
+        if (customer == null) {
+            System.out.println("Customer not found: " + review.getCustomerId());
+            return false;
+        }
+        
+        // Verify product exists
+        Product product = findProductById(review.getProductId());
+        if (product == null) {
+            System.out.println("Product not found: " + review.getProductId());
+            return false;
+        }
+        
+        // Check if review ID already exists
+        if (!reviews.empty()) {
+            reviews.findFirst();
+            while (true) {
+                if (reviews.retrieve().getReviewId() == review.getReviewId()) {
+                    System.out.println("Review with ID " + review.getReviewId() + " already exists");
+                    return false;
+                }
+                if (reviews.last()) break;
+                reviews.findNext();
+            }
+        }
+        
+        reviews.addLast(review);
+        product.addReview(review);
+        customer.addReview(review);
+        System.out.println("Review added successfully");
+        return true;
     }
-    
-    reviews.addLast(review);                             // Line 20
-    product.addReview(review);                           // Line 21
-    customer.addReview(review);                          // Line 22
-    System.out.println("Review added successfully");     // Line 23
-    return true;                                         // Line 24
-}
+
     //  Requirement: "Edit review"
     public boolean editReview(int reviewId, int newRating, String newComment) {
-    if (reviews.empty()) {                               // Line 1
-        return false;                                    // Line 2
-    }
-    
-    reviews.findFirst();                                 // Line 3
-    while (true) {                                       // Line 4
-        Review review = reviews.retrieve();              // Line 5
-        if (review.getReviewId() == reviewId) {          // Line 6
-            if (newRating >= 1 && newRating <= 5) {      // Line 7
-                review.setRating(newRating);             // Line 8
-            }
-            if (newComment != null) {                    // Line 9
-                review.setComment(newComment);           // Line 10
-            }
-            System.out.println("Review updated");        // Line 11
-            return true;                                 // Line 12
+        if (reviews.empty()) {
+            return false;
         }
-        if (reviews.last()) break;                       // Line 13
-        reviews.findNext();                              // Line 14
-    }
-    
-    System.out.println("Review not found");              // Line 15
-    return false;                                        // Line 16
-}
-    // Requirement: "Extract reviews from a specific customer"
-   public LinkedList<Review> getCustomerReviews(int customerId) {
-    LinkedList<Review> customerReviews = new LinkedList<>();  // Line 1
-    
-    if (reviews.empty()) {                                    // Line 2
-        return customerReviews;                               // Line 3
-    }
-    
-    reviews.findFirst();                                      // Line 4
-    while (true) {                                            // Line 5
-        Review review = reviews.retrieve();                   // Line 6
-        if (review.getCustomerId() == customerId) {           // Line 7
-            customerReviews.addLast(review);                  // Line 8
+        
+        reviews.findFirst();
+        while (true) {
+            Review review = reviews.retrieve();
+            if (review.getReviewId() == reviewId) {
+                if (newRating >= 1 && newRating <= 5) {
+                    review.setRating(newRating);
+                }
+                if (newComment != null) {
+                    review.setComment(newComment);
+                }
+                System.out.println("Review updated successfully");
+                return true;
+            }
+            if (reviews.last()) break;
+            reviews.findNext();
         }
-        if (reviews.last()) break;                            // Line 9
-        reviews.findNext();                                   // Line 10
+        
+        System.out.println("Review not found: " + reviewId);
+        return false;
     }
-    
-    return customerReviews;                                   // Line 11
-}
 
+    // Requirement: "Extract reviews from a specific customer"
+    public LinkedList<Review> getCustomerReviews(int customerId) {
+        LinkedList<Review> customerReviews = new LinkedList<>();
+        
+        if (reviews.empty()) {
+            return customerReviews;
+        }
+        
+        reviews.findFirst();
+        while (true) {
+            Review review = reviews.retrieve();
+            if (review.getCustomerId() == customerId) {
+                customerReviews.addLast(review);
+            }
+            if (reviews.last()) break;
+            reviews.findNext();
+        }
+        
+        return customerReviews;
+    }
 
     public void displayCustomerReviews(int customerId) {
         LinkedList<Review> customerReviews = getCustomerReviews(customerId);
@@ -480,55 +486,55 @@ public class InventorySystem {
 
     //  Requirement: "Suggest top 3 products by average rating"
     public LinkedList<Product> getTop3Products() {
-    if (products.empty()) {                              // Line 1
-        return new LinkedList<>();                       // Line 2
-    }
-    
-    // Create arrays for sorting
-    Product[] productArray = new Product[products.size()]; // Line 3: O(p)
-    double[] ratings = new double[products.size()];        // Line 4: O(p)
-    
-    int index = 0;                                       // Line 5
-    products.findFirst();                                // Line 6
-    while (true) {                                       // Line 7
-        Product product = products.retrieve();           // Line 8
-        productArray[index] = product;                   // Line 9
-        ratings[index] = product.getAverageRating();     // Line 10: O(r_i)
-        index++;                                         // Line 11
-        if (products.last()) break;                      // Line 12
-        products.findNext();                             // Line 13
-    }
-    
-    // Selection sort for top 3
-    for (int i = 0; i < productArray.length && i < 3; i++) {  // Line 14: 3 iterations
-        int maxIndex = i;                                // Line 15
-        for (int j = i + 1; j < productArray.length; j++) {   // Line 16: p-i iterations
-            if (ratings[j] > ratings[maxIndex]) {        // Line 17
-                maxIndex = j;                            // Line 18
+        if (products.empty()) {
+            return new LinkedList<>();
+        }
+        
+        // Create array to store products with ratings
+        Product[] productArray = new Product[products.size()];
+        double[] ratings = new double[products.size()];
+        
+        int index = 0;
+        products.findFirst();
+        while (true) {
+            Product product = products.retrieve();
+            productArray[index] = product;
+            ratings[index] = product.getAverageRating();
+            index++;
+            if (products.last()) break;
+            products.findNext();
+        }
+        
+        // Simple selection sort to find top 3
+        for (int i = 0; i < productArray.length && i < 3; i++) {
+            int maxIndex = i;
+            for (int j = i + 1; j < productArray.length; j++) {
+                if (ratings[j] > ratings[maxIndex]) {
+                    maxIndex = j;
+                }
+            }
+            // Swap
+            if (maxIndex != i) {
+                Product tempProd = productArray[i];
+                double tempRating = ratings[i];
+                productArray[i] = productArray[maxIndex];
+                ratings[i] = ratings[maxIndex];
+                productArray[maxIndex] = tempProd;
+                ratings[maxIndex] = tempRating;
             }
         }
-        // Swap products
-        if (maxIndex != i) {                             // Line 19
-            Product tempProd = productArray[i];          // Line 20
-            double tempRating = ratings[i];              // Line 21
-            productArray[i] = productArray[maxIndex];    // Line 22
-            ratings[i] = ratings[maxIndex];              // Line 23
-            productArray[maxIndex] = tempProd;           // Line 24
-            ratings[maxIndex] = tempRating;              // Line 25
+        
+        // Return top 3
+        LinkedList<Product> top3 = new LinkedList<>();
+        int limit = Math.min(3, productArray.length);
+        for (int i = 0; i < limit; i++) {
+            if (ratings[i] > 0) {
+                top3.insert(productArray[i]);
+            }
         }
+        
+        return top3;
     }
-    
-    // Create result list
-    LinkedList<Product> top3 = new LinkedList<>();       // Line 26
-    int limit = Math.min(3, productArray.length);        // Line 27
-    for (int i = 0; i < limit; i++) {                    // Line 28: 3 iterations max
-        if (ratings[i] > 0) {                            // Line 29
-            top3.addLast(productArray[i]);               // Line 30
-        }
-    }
-    
-    return top3;                                         // Line 31
-}
 
     public void displayTop3Products() {
         LinkedList<Product> top3 = getTop3Products();
