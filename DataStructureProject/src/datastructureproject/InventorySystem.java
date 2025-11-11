@@ -45,7 +45,7 @@ public class InventorySystem {
     }
 
     // Linear Search
-    public Customer findCustomer(int customerId) {
+    public Customer findCustomer(int customerId) { //not found in table
         if (customers.empty()) {
             return null;
         }
@@ -62,7 +62,7 @@ public class InventorySystem {
         return null;
     }
 
-    public boolean removeCustomer(int customerId) {
+    public boolean removeCustomer(int customerId) { //not found in table
         if (customers.empty()) {
             return false;
         }
