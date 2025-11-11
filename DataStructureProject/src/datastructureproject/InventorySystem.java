@@ -552,48 +552,47 @@ public class InventorySystem {
     }
 
     //  Requirement: "Common products reviewed by two customers "
-    public LinkedList<Product> getCommonHighRatedProducts(int customer1Id, int customer2Id) {
-        LinkedList<Product> commonProducts = new LinkedList<>();
-        
-        LinkedList<Review> customer1Reviews = getCustomerReviews(customer1Id);
-        LinkedList<Review> customer2Reviews = getCustomerReviews(customer2Id);
-        
-        if (customer1Reviews.empty() || customer2Reviews.empty()) {
-            return commonProducts;
-        }
-        
-        // Find common products with rating > 4
-        customer1Reviews.findFirst();
-        while (true) {
-            Review review1 = customer1Reviews.retrieve();
-            
-            if (review1.getRating() > 4) {
-                // Check if customer2 also reviewed this product with rating > 4
-                customer2Reviews.findFirst();
-                while (true) {
-                    Review review2 = customer2Reviews.retrieve();
-                    
-                    if (review2.getProductId() == review1.getProductId() && review2.getRating() > 4) {
-                        // Check if not already added
-                        Product product = findProductById(review1.getProductId());
-                        if (product != null && !isProductInList(commonProducts, product.getProductId())) {
-                            commonProducts.addLast(product);
-                        }
-                        break;
-                    }
-                    
-                    if (customer2Reviews.last()) break;
-                    customer2Reviews.findNext();
-                }
-            }
-            
-            if (customer1Reviews.last()) break;
-            customer1Reviews.findNext();
-        }
-        
-        return commonProducts;
+    public LinkedList<Product> getCommonHighRatedProducts(int c1, int c2) {
+    LinkedList<Product> commonProducts = new LinkedList<>();     // Line 1
+    
+    LinkedList<Review> customer1Reviews = getCustomerReviews(c1); // Line 2: O(r)
+    LinkedList<Review> customer2Reviews = getCustomerReviews(c2); // Line 3: O(r)
+    
+    if (customer1Reviews.empty() || customer2Reviews.empty()) {  // Line 4
+        return commonProducts;                                   // Line 5
     }
-
+    
+    customer1Reviews.findFirst();                                // Line 6
+    while (true) {                                               // Line 7
+        Review review1 = customer1Reviews.retrieve();            // Line 8
+        
+        if (review1.getRating() > 4) {                           // Line 9
+            customer2Reviews.findFirst();                        // Line 10
+            while (true) {                                       // Line 11
+                Review review2 = customer2Reviews.retrieve();    // Line 12
+                
+                if (review2.getProductId() == review1.getProductId() 
+                    && review2.getRating() > 4) {                // Line 13
+                    
+                    Product product = findProductById(review1.getProductId()); // Line 14: O(p)
+                    if (product != null && 
+                        !isProductInList(commonProducts, product.getProductId())) { // Line 15: O(k)
+                        commonProducts.addLast(product);         // Line 16
+                    }
+                    break;                                       // Line 17
+                }
+                
+                if (customer2Reviews.last()) break;              // Line 18
+                customer2Reviews.findNext();                     // Line 19
+            }
+        }
+        
+        if (customer1Reviews.last()) break;                      // Line 20
+        customer1Reviews.findNext();                             // Line 21
+    }
+    
+    return commonProducts;                                       // Line 22
+}
     public void displayCommonHighRatedProducts(int customer1Id, int customer2Id) {
         LinkedList<Product> common = getCommonHighRatedProducts(customer1Id, customer2Id);
         
