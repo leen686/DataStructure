@@ -240,7 +240,7 @@ public class InventorySystem {
         return true;
     }
 
-    //  Requirement: "Search by ID" - Linear Search
+    //  Requirement: "Search by ID" 
     public Product findProductById(int productId) {
         if (products.empty()) {
             return null;
@@ -258,7 +258,7 @@ public class InventorySystem {
         return null;
     }
 
-    //  Requirement: "Search by name" - Linear Search
+    //  Requirement: "Search by name" 
     public Product findProductByName(String name) {
         if (products.empty()) {
             return null;
@@ -318,7 +318,6 @@ public class InventorySystem {
     }
 
     //  Requirement: "Track out-of-stock products"
-    // Time Complexity: O(n)
     public LinkedList<Product> getOutOfStockProducts() {
         LinkedList<Product> outOfStock = new LinkedList<>();
         
@@ -505,7 +504,7 @@ public class InventorySystem {
             products.findNext();
         }
         
-        // Simple selection sort to find top 3
+        
         for (int i = 0; i < productArray.length && i < 3; i++) {
             int maxIndex = i;
             for (int j = i + 1; j < productArray.length; j++) {
@@ -513,7 +512,7 @@ public class InventorySystem {
                     maxIndex = j;
                 }
             }
-            // Swap
+        
             if (maxIndex != i) {
                 Product tempProd = productArray[i];
                 double tempRating = ratings[i];
@@ -524,7 +523,7 @@ public class InventorySystem {
             }
         }
         
-        // Return top 3
+        
         LinkedList<Product> top3 = new LinkedList<>();
         int limit = Math.min(3, productArray.length);
         for (int i = 0; i < limit; i++) {
@@ -740,7 +739,7 @@ public class InventorySystem {
             System.out.println("Loading products from: " + filename);
             
             if (scanner.hasNextLine()) {
-                scanner.nextLine(); // Skip header
+                scanner.nextLine(); 
             }
             
             while (scanner.hasNextLine()) {
@@ -773,7 +772,7 @@ public class InventorySystem {
             System.out.println("Loading orders from: " + filename);
             
             if (scanner.hasNextLine()) {
-                scanner.nextLine(); // Skip header
+                scanner.nextLine(); 
             }
             
             while (scanner.hasNextLine()) {
@@ -809,7 +808,7 @@ public class InventorySystem {
             System.out.println("Loading reviews from: " + filename);
             
             if (scanner.hasNextLine()) {
-                scanner.nextLine(); // Skip header
+                scanner.nextLine(); 
             }
             
             while (scanner.hasNextLine()) {
