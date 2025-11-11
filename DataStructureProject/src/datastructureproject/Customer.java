@@ -15,7 +15,7 @@ public class Customer {
         this.reviews = new LinkedList<>();
     }
 
-    // ============ Getters ============
+    // Getters 
     public int getCustomerId() { 
         return customerId; 
     }
@@ -36,7 +36,7 @@ public class Customer {
         return reviews;
     }
 
-    // ============ Setters ============
+    //  Setters
     public void setCustomerId(int customerId) { 
         this.customerId = customerId; 
     }
@@ -49,7 +49,7 @@ public class Customer {
         this.email = email; 
     }
 
-    // ============ Order Management ============
+    // Order Management 
     
     public void placeOrder(int orderId) {
         if (!orders.empty()) {
@@ -135,7 +135,7 @@ public class Customer {
         return total;
     }
 
-    // ============ Review Management ============
+    // Review Managemen
     
     public void addReview(Review review) {
         reviews.insert(review);
@@ -145,7 +145,7 @@ public class Customer {
         return reviews;
     }
 
-    // ============ Validation ============
+    //  Validation 
     
     public boolean isValidCustomer() {
         return customerId > 0 && 
@@ -153,7 +153,7 @@ public class Customer {
                email != null && email.contains("@");
     }
 
-    // ============ Display ============
+    // Display 
     
     public void displaySummary() {
         System.out.println("Customer ID: " + customerId);

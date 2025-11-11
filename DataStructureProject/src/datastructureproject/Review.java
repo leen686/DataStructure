@@ -15,7 +15,7 @@ public class Review {
         this.comment = comment;
     }
 
-    // ============ Getters ============
+    //  Getters 
     
     public int getReviewId() { 
         return reviewId; 
@@ -37,7 +37,7 @@ public class Review {
         return comment; 
     }
 
-    // ============ Setters ============
+    //  Setters 
     
     public void setReviewId(int reviewId) {
         this.reviewId = reviewId;
@@ -63,7 +63,7 @@ public class Review {
         this.comment = comment; 
     }
 
-    // ============ Validation ============
+    //  Validation 
     
     public boolean isValidReview() { 
         return reviewId > 0 &&
@@ -73,7 +73,7 @@ public class Review {
                comment != null;
     }
 
-    // ============ Display ============
+    //  Display 
     
     public void display() { 
         System.out.println("  Review ID: " + reviewId);

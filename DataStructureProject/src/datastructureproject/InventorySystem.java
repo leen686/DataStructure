@@ -19,6 +19,7 @@ public class InventorySystem {
 
 
     // CUSTOMER OPERATIONS
+    
     // Requirement: "Register new customer"
     public boolean registerCustomer(Customer customer) {
     if (customer == null || !customer.isValidCustomer()) { // Line 1
@@ -98,6 +99,7 @@ public class InventorySystem {
 
   
     // ORDER OPERATIONS
+    
     //  Requirement: "Create order"
     public boolean createOrder(Order order) {
     if (order == null || !order.isValidOrder()) {        // Line 1
@@ -369,6 +371,7 @@ public class InventorySystem {
     }
 
     // REVIEW OPERATIONS
+    
     //  Requirement: "Add review"
     public boolean addReview(Review review) {
     if (review == null || !review.isValidReview()) {    // Line 1

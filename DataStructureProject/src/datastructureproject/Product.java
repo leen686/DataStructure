@@ -15,7 +15,7 @@ public class Product {
         this.reviews = new LinkedList<>();
     }
 
-    // ============ Getters ============
+    //  Getters 
     
     public int getProductId() { 
         return productId; 
@@ -37,7 +37,7 @@ public class Product {
         return reviews;
     }
 
-    // ============ Setters ============
+    //  Setters 
     
     public void setProductId(int productId) {
         this.productId = productId;
@@ -55,7 +55,7 @@ public class Product {
         this.stock = stock; 
     }
 
-    // ============ Review Management ============
+    //  Review Management 
     
     public void addReview(Review review) {        
         reviews.insert(review);
@@ -79,7 +79,7 @@ public class Product {
     
     return sum / count;                                  // Line 11
 }
-    // ============ Stock Management ============
+    //  Stock Management 
     
     public boolean isOutOfStock() {
         return stock == 0;
@@ -89,7 +89,7 @@ public class Product {
         this.stock = newStock;
     }
 
-    // ============ Validation ============
+    //  Validation 
     
     public boolean isValidProduct() { 
         return productId > 0 && 
@@ -98,7 +98,7 @@ public class Product {
                stock >= 0;
     }
 
-    // ============ Display ============
+    //  Display 
     
     public void display() { 
         System.out.println("Product ID: " + productId);
