@@ -194,17 +194,32 @@ public class Main {
             input.nextLine();
             
             switch (choice) {
-                case 1:
+               case 1:
                     System.out.print("Order ID: ");
                     int oid = input.nextInt();
                     System.out.print("Customer ID: ");
                     int cid = input.nextInt();
                     input.nextLine();
-                    System.out.print("Products (separated by ;): ");
+                    System.out.print("Products IDes (separated by ;): ");
                     String prods = input.nextLine();
-                    System.out.print("Total Price: ");
-                    double total = input.nextDouble();
-                    system.createOrder(new Order(oid, cid, prods, total, LocalDate.now(), "pending"));
+                    
+                    String[] productIds = prods.split(";");
+                    boolean valid = true;
+                    for (String pid : productIds) {
+                        int productId = Integer.parseInt(pid.trim());
+                        if (system.findProductById(productId) == null) {
+                            System.out.println("Product not found: " + productId);
+                            System.out.println("Order cannot be created!");
+                            valid = false;
+                            break;
+                        }
+                    }
+                    
+                    if (valid) {
+                        System.out.print("Total Price: ");
+                        double total = input.nextDouble();
+                        system.createOrder(new Order(oid, cid, prods, total, LocalDate.now(), "pending"));
+                    }
                     break;
                 case 2:
                     System.out.print("Order ID: ");
