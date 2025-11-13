@@ -90,9 +90,11 @@ public class Main {
                     system.displayAllCustomers();
                     break;
                 case 4:
-                    System.out.print("Customer ID: ");
-                    system.removeCustomer(input.nextInt());
-                    break;
+                   System.out.print("Customer ID: ");
+                    if (!system.removeCustomer(input.nextInt())) {
+                 System.out.println("Customer not found!");
+                 }
+                 break; 
                 case 5:
                     return;
                 default:
