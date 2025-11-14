@@ -103,9 +103,9 @@ public class Product {
     public void display() { 
         System.out.println("Product ID: " + productId);
         System.out.println("Name: " + name);
-        System.out.println("Price: $" + String.format("%.2f", price));
+        System.out.println("Price: $" +  price );
         System.out.println("Stock: " + stock);
-        System.out.println("Average Rating: " + String.format("%.2f", getAverageRating()));
+        System.out.println("Average Rating: " +  getAverageRating());
     }
     
     public void displayReviews() { 
