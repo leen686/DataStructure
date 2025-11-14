@@ -19,7 +19,6 @@ public class InventorySystem {
 
 
     // CUSTOMER OPERATIONS
-    
     // Requirement: "Register new customer"
     public boolean registerCustomer(Customer customer) {
         if (customer == null || !customer.isValidCustomer()) {
@@ -45,7 +44,7 @@ public class InventorySystem {
     }
 
     // Linear Search
-    public Customer findCustomer(int customerId) { //not found in table
+    public Customer findCustomer(int customerId) {
         if (customers.empty()) {
             return null;
         }
@@ -62,7 +61,7 @@ public class InventorySystem {
         return null;
     }
 
-    public boolean removeCustomer(int customerId) { //not found in table
+    public boolean removeCustomer(int customerId) {
         if (customers.empty()) {
             return false;
         }
@@ -99,7 +98,6 @@ public class InventorySystem {
 
   
     // ORDER OPERATIONS
-    
     //  Requirement: "Create order"
     public boolean createOrder(Order order) {
         if (order == null || !order.isValidOrder()) {
@@ -240,7 +238,7 @@ public class InventorySystem {
         return true;
     }
 
-    //  Requirement: "Search by ID" 
+    //  Requirement: "Search by ID" - Linear Search
     public Product findProductById(int productId) {
         if (products.empty()) {
             return null;
@@ -258,7 +256,7 @@ public class InventorySystem {
         return null;
     }
 
-    //  Requirement: "Search by name" 
+    //  Requirement: "Search by name" - Linear Search
     public Product findProductByName(String name) {
         if (products.empty()) {
             return null;
@@ -318,6 +316,7 @@ public class InventorySystem {
     }
 
     //  Requirement: "Track out-of-stock products"
+    // Time Complexity: O(n)
     public LinkedList<Product> getOutOfStockProducts() {
         LinkedList<Product> outOfStock = new LinkedList<>();
         
@@ -373,7 +372,6 @@ public class InventorySystem {
     }
 
     // REVIEW OPERATIONS
-    
     //  Requirement: "Add review"
     public boolean addReview(Review review) {
         if (review == null || !review.isValidReview()) {
@@ -504,7 +502,7 @@ public class InventorySystem {
             products.findNext();
         }
         
-        
+        // Simple selection sort to find top 3
         for (int i = 0; i < productArray.length && i < 3; i++) {
             int maxIndex = i;
             for (int j = i + 1; j < productArray.length; j++) {
@@ -512,7 +510,7 @@ public class InventorySystem {
                     maxIndex = j;
                 }
             }
-        
+            // Swap
             if (maxIndex != i) {
                 Product tempProd = productArray[i];
                 double tempRating = ratings[i];
@@ -523,7 +521,7 @@ public class InventorySystem {
             }
         }
         
-        
+        // Return top 3
         LinkedList<Product> top3 = new LinkedList<>();
         int limit = Math.min(3, productArray.length);
         for (int i = 0; i < limit; i++) {
@@ -557,47 +555,48 @@ public class InventorySystem {
     }
 
     //  Requirement: "Common products reviewed by two customers "
-    public LinkedList<Product> getCommonHighRatedProducts(int c1, int c2) {
-    LinkedList<Product> commonProducts = new LinkedList<>();     // Line 1
-    
-    LinkedList<Review> customer1Reviews = getCustomerReviews(c1); // Line 2: O(r)
-    LinkedList<Review> customer2Reviews = getCustomerReviews(c2); // Line 3: O(r)
-    
-    if (customer1Reviews.empty() || customer2Reviews.empty()) {  // Line 4
-        return commonProducts;                                   // Line 5
-    }
-    
-    customer1Reviews.findFirst();                                // Line 6
-    while (true) {                                               // Line 7
-        Review review1 = customer1Reviews.retrieve();            // Line 8
+    public LinkedList<Product> getCommonHighRatedProducts(int customer1Id, int customer2Id) {
+        LinkedList<Product> commonProducts = new LinkedList<>();
         
-        if (review1.getRating() > 4) {                           // Line 9
-            customer2Reviews.findFirst();                        // Line 10
-            while (true) {                                       // Line 11
-                Review review2 = customer2Reviews.retrieve();    // Line 12
-                
-                if (review2.getProductId() == review1.getProductId() 
-                    && review2.getRating() > 4) {                // Line 13
-                    
-                    Product product = findProductById(review1.getProductId()); // Line 14: O(p)
-                    if (product != null && 
-                        !isProductInList(commonProducts, product.getProductId())) { // Line 15: O(k)
-                        commonProducts.addLast(product);         // Line 16
-                    }
-                    break;                                       // Line 17
-                }
-                
-                if (customer2Reviews.last()) break;              // Line 18
-                customer2Reviews.findNext();                     // Line 19
-            }
+        LinkedList<Review> customer1Reviews = getCustomerReviews(customer1Id);
+        LinkedList<Review> customer2Reviews = getCustomerReviews(customer2Id);
+        
+        if (customer1Reviews.empty() || customer2Reviews.empty()) {
+            return commonProducts;
         }
         
-        if (customer1Reviews.last()) break;                      // Line 20
-        customer1Reviews.findNext();                             // Line 21
+        // Find common products with rating > 4
+        customer1Reviews.findFirst();
+        while (true) {
+            Review review1 = customer1Reviews.retrieve();
+            
+            if (review1.getRating() > 4) {
+                // Check if customer2 also reviewed this product with rating > 4
+                customer2Reviews.findFirst();
+                while (true) {
+                    Review review2 = customer2Reviews.retrieve();
+                    
+                    if (review2.getProductId() == review1.getProductId() && review2.getRating() > 4) {
+                        // Check if not already added
+                        Product product = findProductById(review1.getProductId());
+                        if (product != null && !isProductInList(commonProducts, product.getProductId())) {
+                            commonProducts.addLast(product);
+                        }
+                        break;
+                    }
+                    
+                    if (customer2Reviews.last()) break;
+                    customer2Reviews.findNext();
+                }
+            }
+            
+            if (customer1Reviews.last()) break;
+            customer1Reviews.findNext();
+        }
+        
+        return commonProducts;
     }
-    
-    return commonProducts;                                       // Line 22
-}
+
     public void displayCommonHighRatedProducts(int customer1Id, int customer2Id) {
         LinkedList<Product> common = getCommonHighRatedProducts(customer1Id, customer2Id);
         
@@ -739,7 +738,7 @@ public class InventorySystem {
             System.out.println("Loading products from: " + filename);
             
             if (scanner.hasNextLine()) {
-                scanner.nextLine(); 
+                scanner.nextLine(); // Skip header
             }
             
             while (scanner.hasNextLine()) {
@@ -772,7 +771,7 @@ public class InventorySystem {
             System.out.println("Loading orders from: " + filename);
             
             if (scanner.hasNextLine()) {
-                scanner.nextLine(); 
+                scanner.nextLine(); // Skip header
             }
             
             while (scanner.hasNextLine()) {
@@ -808,7 +807,7 @@ public class InventorySystem {
             System.out.println("Loading reviews from: " + filename);
             
             if (scanner.hasNextLine()) {
-                scanner.nextLine(); 
+                scanner.nextLine(); // Skip header
             }
             
             while (scanner.hasNextLine()) {
