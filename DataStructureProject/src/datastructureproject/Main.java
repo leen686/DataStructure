@@ -62,7 +62,9 @@ public class Main {
             System.out.println("2. Find Customer by ID");
             System.out.println("3. Display All Customers");
             System.out.println("4. Remove Customer");
-            System.out.println("5. Back to Main Menu");
+            System.out.println("5. Place order for specific customer ");
+            System.out.println("6. View Customer Order History  ");
+            System.out.println("7. Back to Main Menu");
             System.out.println("**************************************************");
             System.out.print("Enter your choice: ");
             
@@ -95,7 +97,41 @@ public class Main {
                  System.out.println("Customer not found!");
                  }
                  break; 
-                case 5:
+             case 5: 
+             System.out.println("=== Place Order ===");
+             System.out.print("Customer ID: ");
+             int custId = input.nextInt();
+            Customer customer = system.findCustomer(custId);
+    
+           if (customer == null) {
+          System.out.println("Customer not found!");
+          break;
+           }
+    
+           System.out.print("Order ID to add: ");
+           int orderId = input.nextInt();
+    
+  
+          Order existingOrder = system.findOrder(orderId);
+          if (existingOrder == null) {
+        System.out.println("Order " + orderId + " does not exist in the system!");
+        System.out.println("Please create the order first using 'Create Order'");
+        break;
+          }
+        customer.placeOrder(orderId);
+       break;
+       
+        case 6: 
+        System.out.print("Customer ID: ");
+        int histId = input.nextInt();
+        Customer histCustomer = system.findCustomer(histId);
+        if (histCustomer != null) {
+        histCustomer.viewOrderHistory(system);
+      } else {
+        System.out.println("Customer not found!");
+     }
+             break;
+                case 7:
                     return;
                 default:
                     System.out.println("Invalid!");
@@ -198,7 +234,7 @@ public class Main {
             System.out.println("3. Display All");
             System.out.println("4. Update Status");
             System.out.println("5. Cancel Order");
-            System.out.println("6. Orders by Date");
+            System.out.println("6. Orders between two Dates");
             System.out.println("7. Back");
             System.out.println("**************************************************");
             System.out.print("Choice: ");
