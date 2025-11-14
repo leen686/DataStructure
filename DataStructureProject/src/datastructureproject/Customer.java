@@ -15,7 +15,7 @@ public class Customer {
         this.reviews = new LinkedList<>();
     }
 
-    // Getters 
+    // ============ Getters ============
     public int getCustomerId() { 
         return customerId; 
     }
@@ -36,7 +36,7 @@ public class Customer {
         return reviews;
     }
 
-    //  Setters
+    // ============ Setters ============
     public void setCustomerId(int customerId) { 
         this.customerId = customerId; 
     }
@@ -49,7 +49,7 @@ public class Customer {
         this.email = email; 
     }
 
-    // Order Management 
+    // ============ Order Management ============
     
     public void placeOrder(int orderId) {
         if (!orders.empty()) {
@@ -84,25 +84,25 @@ public class Customer {
         return false;
     }
 
-   public void viewOrderHistory(InventorySystem system) {
-    if (orders.empty()) {                                // Line 1
-        System.out.println("No orders found");           // Line 2
-        return;                                          // Line 3
-    }
-
-    System.out.println("=== Order History ===");        // Line 4
-    orders.findFirst();                                  // Line 5
-    while (true) {                                       // Line 6
-        int orderId = orders.retrieve();                 // Line 7
-        Order order = system.findOrder(orderId);         // Line 8: O(o)
-        if (order != null) {                             // Line 9
-            order.displayBriefInfo();                    // Line 10
+    public void viewOrderHistory(InventorySystem system) {
+        if (orders.empty()) {
+            System.out.println("No orders found for customer " + customerId);
+            return;
         }
-        
-        if (orders.last()) break;                        // Line 11
-        orders.findNext();                               // Line 12
+
+        System.out.println("=== Order History for Customer: " + name + " ===");
+        orders.findFirst();
+        while (true) {
+            int orderId = orders.retrieve();
+            Order order = system.findOrder(orderId);
+            if (order != null) {
+                order.displayBriefInfo();
+            }
+            
+            if (orders.last()) break;
+            orders.findNext();
+        }
     }
-}
 
     public int countOrders() {
         int count = 0;
@@ -135,7 +135,7 @@ public class Customer {
         return total;
     }
 
-    // Review Managemen
+    // ============ Review Management ============
     
     public void addReview(Review review) {
         reviews.insert(review);
@@ -145,7 +145,7 @@ public class Customer {
         return reviews;
     }
 
-    //  Validation 
+    // ============ Validation ============
     
     public boolean isValidCustomer() {
         return customerId > 0 && 
@@ -153,7 +153,7 @@ public class Customer {
                email != null && email.contains("@");
     }
 
-    // Display 
+    // ============ Display ============
     
     public void displaySummary() {
         System.out.println("Customer ID: " + customerId);
@@ -170,7 +170,7 @@ public class Customer {
         System.out.println("Name: " + name);
         System.out.println("Email: " + email);
         System.out.println("Total Orders: " + countOrders());
-        System.out.println("Total Spending: $" + String.format("%.2f", calculateTotalSpending(system)));
+        System.out.println("Total Spending: $" + calculateTotalSpending(system));
         System.out.println("========================================");
     }
 
