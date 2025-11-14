@@ -1,3 +1,4 @@
+
 package datastructureproject;
 
 import java.time.LocalDate;
@@ -21,7 +22,7 @@ public class Order {
         processProducts(productsData);
     }
 
-    // Getters 
+    // ============ Getters ============
     public int getOrderId() { 
         return orderId; 
     }
@@ -46,7 +47,7 @@ public class Order {
         return status; 
     }
 
-    // Setters 
+    // ============ Setters ============
     public void setOrderId(int orderId) { 
         this.orderId = orderId; 
     }
@@ -72,7 +73,7 @@ public class Order {
         }
     }
 
-    //  Product Management
+    // ============ Product Management ============
     
     private void processProducts(String productsData) {
         if (productsData != null && !productsData.trim().isEmpty()) {
@@ -82,7 +83,7 @@ public class Order {
                     int productId = Integer.parseInt(product.trim());
                     addProduct(productId);
                 } catch (NumberFormatException e) {
-                    System.out.println("Error processing product: " + product);
+                    System.out.println("Error processing product: " + product); 
                 }
             }
         }
@@ -136,7 +137,7 @@ public class Order {
         return false;
     }
 
-    // Status Operations 
+    // ============ Status Operations ============
     
     private boolean isValidStatus(String status) {
         String lower = status.toLowerCase();
@@ -160,7 +161,7 @@ public class Order {
         }
     }
 
-    //  Validation 
+    // ============ Validation ============
     
     public boolean isValidOrder() {
         return orderId > 0 && 
@@ -171,7 +172,7 @@ public class Order {
                isValidStatus(status);
     }
 
-    //  Statistics 
+    // ============ Statistics ============
     
     public int countProducts() {
         int count = 0;
@@ -190,13 +191,13 @@ public class Order {
         return !orderDate.isBefore(startDate) && !orderDate.isAfter(endDate);
     }
 
-    //  Display 
+    // ============ Display ============
     
-    public void displayOrderDetails() { 
+    public void displayOrderDetails() {
         System.out.println("Order ID: " + orderId);
         System.out.println("Customer ID: " + customerId);
         System.out.println("Products: " + formatProductsList());
-        System.out.println("Total Price: $" + String.format("%.2f", totalPrice));
+        System.out.println("Total Price: " +  totalPrice);
         System.out.println("Order Date: " + orderDate);
         System.out.println("Status: " + status);
         System.out.println("Number of Products: " + countProducts());
@@ -204,7 +205,7 @@ public class Order {
 
     public void displayBriefInfo() {
         System.out.println(orderId + " - Customer:" + customerId + " - $" + 
-                          String.format("%.2f", totalPrice) + " - " + status);
+                          totalPrice + " - " + status);
     }
 
     private String formatProductsList() {
@@ -229,4 +230,3 @@ public class Order {
                 orderId, customerId, countProducts(), totalPrice, orderDate, status);
     }
 }
-
