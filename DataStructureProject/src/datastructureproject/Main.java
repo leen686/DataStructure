@@ -115,7 +115,8 @@ public class Main {
             System.out.println("5. Update Product");
             System.out.println("6. Remove Product");
             System.out.println("7. Out of Stock");
-            System.out.println("8. Back");
+            System.out.println("8. product average rating ");
+            System.out.println("9. Back");
             System.out.println("**************************************************");
             System.out.print("Choice: ");
             
@@ -169,7 +170,17 @@ public class Main {
                 case 7:
                     system.displayOutOfStockProducts();
                     break;
-                case 8:
+                 case 8:
+                    System.out.print("Product ID: ");
+                    Product pr = system.findProductById(input.nextInt());
+                    if (pr != null) {
+                        System.out.println("Product: " + pr.getName());
+                        System.out.println("Average Rating: " + pr.getAverageRating() + "/5");
+                    } else {
+                        System.out.println("Product not found!");
+                    }
+                    break;
+                case 9:
                     return;
                 default:
                     System.out.println("Invalid!");
