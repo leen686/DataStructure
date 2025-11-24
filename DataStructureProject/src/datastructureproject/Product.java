@@ -5,6 +5,7 @@ public class Product {
     private String name;
     private double price;
     private int stock;
+    private BST_int<Review> BSTreviews;
     private LinkedList<Review> reviews;
     
     public Product(int productId, String name, double price, int stock) {
@@ -12,7 +13,8 @@ public class Product {
         this.name = name;
         this.price = price;
         this.stock = stock;
-        this.reviews = new LinkedList<>();
+        reviews=new LinkedList<>();
+        this.BSTreviews = new BST_int<>();
     }
 
     //  Getters 
@@ -33,8 +35,9 @@ public class Product {
         return stock; 
     }
     
-    public LinkedList<Review> getReviews() {
-        return reviews;
+    public BST_int<Review>getReviews()
+    {
+    return BSTreviews;
     }
 
     //  Setters 
