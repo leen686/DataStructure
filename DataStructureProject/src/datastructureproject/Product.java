@@ -13,7 +13,7 @@ public class Product {
         this.name = name;
         this.price = price;
         this.stock = stock;
-        reviews=new LinkedList<>();
+        this.reviews=new LinkedList<>();
         this.BSTreviews = new BST_int<>();
     }
 
