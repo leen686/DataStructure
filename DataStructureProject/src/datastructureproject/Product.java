@@ -5,131 +5,113 @@ public class Product {
     private String name;
     private double price;
     private int stock;
-    private BST_int<Review> BSTreviews;
-    private LinkedList<Review> reviews;
     
+    // Constructor
     public Product(int productId, String name, double price, int stock) {
         this.productId = productId;
         this.name = name;
         this.price = price;
         this.stock = stock;
-        this.reviews=new LinkedList<>();
-        this.BSTreviews = new BST_int<>();
-    }
-
-    //  Getters 
-    
-    public int getProductId() { 
-        return productId; 
     }
     
-    public String getName() { 
-        return name; 
+    // Getters
+    public int getProductId() {
+        return productId;
+    }
+    
+    public String getName() {
+        return name;
     }
     
     public double getPrice() {
-        return price; 
+        return price;
     }
     
-    public int getStock() { 
-        return stock; 
+    public int getStock() {
+        return stock;
     }
     
-    public BST_int<Review>getReviews()
-    {
-    return BSTreviews;
-    }
-
-    //  Setters 
-    
-    public void setProductId(int productId) {
-        this.productId = productId;
-    }
-    
+    // Setters
     public void setName(String name) {
         this.name = name;
     }
     
-    public void setPrice(double price) { 
-        this.price = price; 
+    public void setPrice(double price) {
+        if (price >= 0) {
+            this.price = price;
+        }
     }
     
     public void setStock(int stock) {
-        this.stock = stock; 
-    }
-
-    //  Review Management 
-    
-    public void addReview(Review review) {        
-        reviews.insert(review);
-    }
-
-   public double getAverageRating() {
-    if (reviews.empty()) {                               // Line 1
-        return 0.0;                                      // Line 2
+        if (stock >= 0) {
+            this.stock = stock;
+        }
     }
     
-    reviews.findFirst();                                 // Line 3
-    double sum = 0;                                      // Line 4
-    int count = 0;                                       // Line 5
-    
-    while (true) {                                       // Line 6
-        sum += reviews.retrieve().getRating();           // Line 7
-        count++;                                         // Line 8
-        if (reviews.last()) break;                       // Line 9
-        reviews.findNext();                              // Line 10
+    // Methods
+    public boolean isInStock() {
+        return stock > 0;
     }
-    
-    return sum / count;                                  // Line 11
-}
-    //  Stock Management 
     
     public boolean isOutOfStock() {
         return stock == 0;
     }
     
-    public void updateStock(int newStock) {
-        this.stock = newStock;
+    public boolean isInPriceRange(double minPrice, double maxPrice) {
+        return price >= minPrice && price <= maxPrice;
     }
-
-    //  Validation 
     
-    public boolean isValidProduct() { 
+    public boolean reduceStock(int quantity) {
+        if (quantity <= stock) {
+            stock -= quantity;
+            return true;
+        }
+        return false;
+    }
+    
+    public void addStock(int quantity) {
+        if (quantity > 0) {
+            stock += quantity;
+        }
+    }
+    
+    public boolean isValidProduct() {
         return productId > 0 && 
-               name != null && !name.trim().isEmpty() &&
-               price >= 0 &&
+               name != null && !name.trim().isEmpty() && 
+               price >= 0 && 
                stock >= 0;
     }
-
-    //  Display 
     
-    public void display() { 
+    // Display methods
+    public void displayInfo() {
+        System.out.println("========================================");
         System.out.println("Product ID: " + productId);
         System.out.println("Name: " + name);
-        System.out.println("Price: $" +  price );
+        System.out.println("Price: $" + String.format("%.2f", price));
         System.out.println("Stock: " + stock);
-        System.out.println("Average Rating: " +  getAverageRating());
+        System.out.println("Status: " + (isInStock() ? "In Stock" : "Out of Stock"));
+        System.out.println("========================================");
     }
     
-    public void displayReviews() { 
-        System.out.println("Reviews for " + name + ":");
-        if (reviews.empty()) {
-            System.out.println("  No reviews yet");
-            return;
-        }
-        
-        reviews.findFirst();
-        while (true) {
-            reviews.retrieve().display();
-            if (reviews.last()) break;
-            reviews.findNext();
-        }
+    public void displaySummary() {
+        System.out.println("Product: " + name + " (ID: " + productId + ")");
+        System.out.println("Price: $" + String.format("%.2f", price) + 
+                         " | Stock: " + stock);
     }
-
+    
+    public void displayBrief() {
+        System.out.println(productId + " - " + name + 
+                         " - $" + String.format("%.2f", price) + 
+                         " (Stock: " + stock + ")");
+    }
+    
     @Override
     public String toString() {
-        return String.format("Product[ID:%d, Name:%s, Price:$%.2f, Stock:%d, Avg Rating:%.2f]",
-                productId, name, price, stock, getAverageRating());
+        return "Product{" +
+               "ID=" + productId +
+               ", name='" + name + '\'' +
+               ", price=" + price +
+               ", stock=" + stock +
+               '}';
     }
 }
-
