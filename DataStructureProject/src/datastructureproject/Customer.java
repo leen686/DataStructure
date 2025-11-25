@@ -1,245 +1,80 @@
 package datastructureproject;
 
-import java.time.LocalDate;
-
-// Order class - implements Comparable for BST
-class Order implements Comparable<Order> {
-    private int orderId;
+// Customer class - implements Comparable for BST
+class Customer implements Comparable<Customer> {
     private int customerId;
-    private String productsData; // Can be product IDs or description
-    private double totalPrice;
-    private LocalDate orderDate;
-    private String status; // "pending", "processing", "shipped", "delivered", "canceled"
-
-    public Order(int orderId, int customerId, String productsData, 
-                 double totalPrice, LocalDate orderDate, String status) {
-        this.orderId = orderId;
-        this.customerId = customerId;
-        this.productsData = productsData;
-        this.totalPrice = totalPrice;
-        this.orderDate = orderDate;
-        this.status = status;
-    }
-
-    // Getters
-    public int getOrderId() { return orderId; }
-    public int getCustomerId() { return customerId; }
-    public String getProductsData() { return productsData; }
-    public double getTotalPrice() { return totalPrice; }
-    public LocalDate getOrderDate() { return orderDate; }
-    public String getStatus() { return status; }
-
-    // Setters
-    public void setStatus(String status) { 
-        this.status = status;
-        System.out.println("Order " + orderId + " status updated to: " + status);
-    }
-    
-    public void setTotalPrice(double totalPrice) { this.totalPrice = totalPrice; }
-
-    // Order operations
-    public boolean canBeCanceled() {
-        return !status.equalsIgnoreCase("delivered") && 
-               !status.equalsIgnoreCase("canceled");
-    }
-
-    public void cancelOrder() {
-        if (canBeCanceled()) {
-            this.status = "canceled";
-            System.out.println("Order " + orderId + " has been canceled");
-        } else {
-            System.out.println("Order " + orderId + " cannot be canceled");
-        }
-    }
-
-    // Validation
-    public boolean isValidOrder() {
-        return orderId > 0 && customerId > 0 && totalPrice >= 0 
-               && orderDate != null && status != null;
-    }
-
-    // Date range check
-    public boolean isBetweenDates(LocalDate startDate, LocalDate endDate) {
-        return !orderDate.isBefore(startDate) && !orderDate.isAfter(endDate);
-    }
-
-    // Comparable implementation - compare by orderId
-    @Override
-    public int compareTo(Order other) {
-        return Integer.compare(this.orderId, other.orderId);
-    }
-
-    // Display methods
-    public void displayBriefInfo() {
-        System.out.printf("Order #%d | Customer: %d | Total: $%.2f | Date: %s | Status: %s%n",
-                         orderId, customerId, totalPrice, orderDate, status);
-    }
-
-    public void displayFullDetails() {
-        System.out.println("========================================");
-        System.out.println("Order Details");
-        System.out.println("========================================");
-        System.out.println("Order ID: " + orderId);
-        System.out.println("Customer ID: " + customerId);
-        System.out.println("Products: " + productsData);
-        System.out.println("Total Price: $" + String.format("%.2f", totalPrice));
-        System.out.println("Order Date: " + orderDate);
-        System.out.println("Status: " + status);
-        System.out.println("========================================");
-    }
-
-    @Override
-    public String toString() {
-        return "Order{id=" + orderId + ", customerId=" + customerId + 
-               ", total=$" + totalPrice + ", date=" + orderDate + 
-               ", status='" + status + "'}";
-    }
-}
-
-// Product class - implements Comparable for BST
-class Product implements Comparable<Product> {
-    private int productId;
     private String name;
-    private double price;
-    private int stock;
+    private String email;
+    private LinkedList<Integer> orderIds;
 
-    public Product(int productId, String name, double price, int stock) {
-        this.productId = productId;
+    public Customer(int customerId, String name, String email) {
+        this.customerId = customerId;
         this.name = name;
-        this.price = price;
-        this.stock = stock;
+        this.email = email;
+        this.orderIds = new LinkedList<>();
     }
 
     // Getters
-    public int getProductId() { return productId; }
+    public int getCustomerId() { return customerId; }
     public String getName() { return name; }
-    public double getPrice() { return price; }
-    public int getStock() { return stock; }
+    public String getEmail() { return email; }
+    public LinkedList<Integer> getOrderIds() { return orderIds; }
 
     // Setters
     public void setName(String name) { this.name = name; }
-    public void setPrice(double price) { this.price = price; }
-    public void setStock(int stock) { this.stock = stock; }
+    public void setEmail(String email) { this.email = email; }
 
-    // Stock operations
-    public boolean isOutOfStock() {
-        return stock <= 0;
-    }
-
-    public boolean isInStock() {
-        return stock > 0;
-    }
-
-    public boolean reduceStock(int quantity) {
-        if (stock >= quantity) {
-            stock -= quantity;
-            return true;
-        }
-        return false;
-    }
-
-    public void increaseStock(int quantity) {
-        if (quantity > 0) {
-            stock += quantity;
-        }
+    // Place order
+    public void placeOrder(int orderId) {
+        orderIds.addLast(orderId);
     }
 
     // Validation
-    public boolean isValidProduct() {
-        return productId > 0 && name != null && !name.isEmpty() 
-               && price >= 0 && stock >= 0;
+    public boolean isValidCustomer() {
+        return customerId > 0 && name != null && !name.isEmpty() 
+               && email != null && email.contains("@");
     }
 
-    // Price range check
-    public boolean isInPriceRange(double minPrice, double maxPrice) {
-        return price >= minPrice && price <= maxPrice;
-    }
-
-    // Comparable implementation - compare by productId
+    // Comparable implementation - compare by customerId
     @Override
-    public int compareTo(Product other) {
-        return Integer.compare(this.productId, other.productId);
+    public int compareTo(Customer other) {
+        return Integer.compare(this.customerId, other.customerId);
     }
 
     // Display methods
     public void displaySummary() {
-        System.out.printf("Product #%d: %s | Price: $%.2f | Stock: %d%n",
-                         productId, name, price, stock);
+        System.out.println("Customer ID: " + customerId);
+        System.out.println("Name: " + name);
+        System.out.println("Email: " + email);
+        System.out.println("Total Orders: " + orderIds.size());
     }
 
     public void displayFullDetails() {
         System.out.println("========================================");
-        System.out.println("Product Details");
+        System.out.println("Customer Details");
         System.out.println("========================================");
-        System.out.println("Product ID: " + productId);
+        System.out.println("ID: " + customerId);
         System.out.println("Name: " + name);
-        System.out.println("Price: $" + String.format("%.2f", price));
-        System.out.println("Stock: " + stock);
-        System.out.println("Status: " + (isOutOfStock() ? "OUT OF STOCK" : "In Stock"));
+        System.out.println("Email: " + email);
+        System.out.println("Number of Orders: " + orderIds.size());
+        
+        if (!orderIds.empty()) {
+            System.out.print("Order IDs: ");
+            orderIds.findFirst();
+            while (true) {
+                System.out.print(orderIds.retrieve());
+                if (orderIds.last()) break;
+                System.out.print(", ");
+                orderIds.findNext();
+            }
+            System.out.println();
+        }
         System.out.println("========================================");
     }
 
     @Override
     public String toString() {
-        return "Product{id=" + productId + ", name='" + name + 
-               "', price=$" + price + ", stock=" + stock + "}";
-    }
-}
-
-// Review class - implements Comparable for BST  
-class Review implements Comparable<Review> {
-    private int reviewId;
-    private int productId;
-    private int customerId;
-    private int rating; // 1-5
-    private String comment;
-
-    public Review(int reviewId, int productId, int customerId, int rating, String comment) {
-        this.reviewId = reviewId;
-        this.productId = productId;
-        this.customerId = customerId;
-        this.rating = Math.max(1, Math.min(5, rating)); // Ensure 1-5 range
-        this.comment = comment;
-    }
-
-    // Getters
-    public int getReviewId() { return reviewId; }
-    public int getProductId() { return productId; }
-    public int getCustomerId() { return customerId; }
-    public int getRating() { return rating; }
-    public String getComment() { return comment; }
-
-    // Setters
-    public void setRating(int rating) { 
-        this.rating = Math.max(1, Math.min(5, rating));
-    }
-    public void setComment(String comment) { this.comment = comment; }
-
-    // Validation
-    public boolean isValidReview() {
-        return reviewId > 0 && productId > 0 && customerId > 0 
-               && rating >= 1 && rating <= 5;
-    }
-
-    // Comparable implementation - compare by reviewId
-    @Override
-    public int compareTo(Review other) {
-        return Integer.compare(this.reviewId, other.reviewId);
-    }
-
-    // Display methods
-    public void displayReview() {
-        System.out.println("Review #" + reviewId);
-        System.out.println("Product ID: " + productId);
-        System.out.println("Customer ID: " + customerId);
-        System.out.println("Rating: " + rating + "/5");
-        System.out.println("Comment: " + comment);
-        System.out.println("---");
-    }
-
-    @Override
-    public String toString() {
-        return "Review{id=" + reviewId + ", productId=" + productId + 
-               ", customerId=" + customerId + ", rating=" + rating + "/5}";
+        return "Customer{id=" + customerId + ", name='" + name + 
+               "', email='" + email + "', orders=" + orderIds.size() + "}";
     }
 }
