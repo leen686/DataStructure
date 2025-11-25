@@ -4,178 +4,30 @@ import java.time.LocalDate;
 import java.io.File;
 import java.util.Scanner;
 
-// BST Node class for generic use
-class BSTNode<K extends Comparable<K>, V> {
-    K key;
-    V value;
-    BSTNode<K, V> left;
-    BSTNode<K, V> right;
-    
-    public BSTNode(K key, V value) {
-        this.key = key;
-        this.value = value;
-        this.left = null;
-        this.right = null;
-    }
-}
-
-// Binary Search Tree implementation
-class BST<K extends Comparable<K>, V> {
-    private BSTNode<K, V> root;
-    
-    public BST() {
-        this.root = null;
-    }
-    
-    // Insert operation - O(log n)
-    public void insert(K key, V value) {
-        root = insertRec(root, key, value);
-    }
-    
-    private BSTNode<K, V> insertRec(BSTNode<K, V> node, K key, V value) {
-        if (node == null) {
-            return new BSTNode<>(key, value);
-        }
-        
-        int cmp = key.compareTo(node.key);
-        if (cmp < 0) {
-            node.left = insertRec(node.left, key, value);
-        } else if (cmp > 0) {
-            node.right = insertRec(node.right, key, value);
-        } else {
-            // Update if key exists
-            node.value = value;
-        }
-        return node;
-    }
-    
-    // Search operation - O(log n)
-    public V search(K key) {
-        BSTNode<K, V> node = searchRec(root, key);
-        return node != null ? node.value : null;
-    }
-    
-    private BSTNode<K, V> searchRec(BSTNode<K, V> node, K key) {
-        if (node == null || key.compareTo(node.key) == 0) {
-            return node;
-        }
-        
-        if (key.compareTo(node.key) < 0) {
-            return searchRec(node.left, key);
-        } else {
-            return searchRec(node.right, key);
-        }
-    }
-    
-    // In-order traversal - returns sorted list
-    public LinkedList<V> inOrderTraversal() {
-        LinkedList<V> result = new LinkedList<>();
-        inOrderRec(root, result);
-        return result;
-    }
-    
-    private void inOrderRec(BSTNode<K, V> node, LinkedList<V> result) {
-        if (node != null) {
-            inOrderRec(node.left, result);
-            result.addLast(node.value);
-            inOrderRec(node.right, result);
-        }
-    }
-    
-    // Get all values
-    public LinkedList<V> getAllValues() {
-        return inOrderTraversal();
-    }
-    
-    // Check if empty
-    public boolean isEmpty() {
-        return root == null;
-    }
-    
-    // Delete operation - O(log n)
-    public boolean delete(K key) {
-        if (search(key) == null) {
-            return false;
-        }
-        root = deleteRec(root, key);
-        return true;
-    }
-    
-    private BSTNode<K, V> deleteRec(BSTNode<K, V> node, K key) {
-        if (node == null) {
-            return null;
-        }
-        
-        int cmp = key.compareTo(node.key);
-        if (cmp < 0) {
-            node.left = deleteRec(node.left, key);
-        } else if (cmp > 0) {
-            node.right = deleteRec(node.right, key);
-        } else {
-            // Node to delete found
-            if (node.left == null) {
-                return node.right;
-            } else if (node.right == null) {
-                return node.left;
-            }
-            
-            // Node with two children: Get inorder successor
-            node.key = minValue(node.right);
-            node.value = search(node.key);
-            node.right = deleteRec(node.right, node.key);
-        }
-        return node;
-    }
-    
-    private K minValue(BSTNode<K, V> node) {
-        K minValue = node.key;
-        while (node.left != null) {
-            minValue = node.left.key;
-            node = node.left;
-        }
-        return minValue;
-    }
-    
-    // Size operation - O(n)
-    public int size() {
-        return sizeRec(root);
-    }
-    
-    private int sizeRec(BSTNode<K, V> node) {
-        if (node == null) {
-            return 0;
-        }
-        return 1 + sizeRec(node.left) + sizeRec(node.right);
-    }
-}
-
 public class InventorySystem {
-    // Phase 2: Using BST instead of LinkedList
-    private BST<Integer, Customer> customers;   // Key: customerId
-    private BST<Integer, Order> orders;         // Key: orderId
-    private BST<Integer, Product> products;     // Key: productId
-    private BST<Integer, Review> reviews;       // Key: reviewId
+    // Using BSTree for main storage
+    private BSTree<Integer, Customer> customers;   // Key: customerId
+    private BSTree<Integer, Order> orders;         // Key: orderId
+    private BSTree<Integer, Product> products;     // Key: productId
+    private BSTree<Integer, Review> reviews;       // Key: reviewId
 
     public InventorySystem() {
-        this.customers = new BST<>();
-        this.orders = new BST<>();
-        this.products = new BST<>();
-        this.reviews = new BST<>();
+        this.customers = new BSTree<>();
+        this.orders = new BSTree<>();
+        this.products = new BSTree<>();
+        this.reviews = new BSTree<>();
     }
 
 
     // ============= CUSTOMER OPERATIONS =============
     
-    // Requirement: "Register new customer"
-    // Phase 2: O(log n) instead of O(n)
     public boolean registerCustomer(Customer customer) {
         if (customer == null || !customer.isValidCustomer()) {
             System.out.println("Invalid customer data");
             return false;
         }
         
-        // Check if customer already exists - O(log n)
-        if (customers.search(customer.getCustomerId()) != null) {
+        if (customers.find(customer.getCustomerId())) {
             System.out.println("Customer with ID " + customer.getCustomerId() + " already exists");
             return false;
         }
@@ -185,27 +37,28 @@ public class InventorySystem {
         return true;
     }
 
-    // Phase 2: O(log n) - BST Search
     public Customer findCustomer(int customerId) {
-        return customers.search(customerId);
+        if (customers.find(customerId)) {
+            return customers.retrieve();
+        }
+        return null;
     }
 
-    // Phase 2: O(log n) for search + O(log n) for delete
     public boolean removeCustomer(int customerId) {
-        Customer customer = customers.search(customerId);
+        Customer customer = findCustomer(customerId);
         if (customer == null) {
             System.out.println("Customer not found: " + customerId);
             return false;
         }
         
-        customers.delete(customerId);
+        customers.remove(customerId);
         removeCustomerOrders(customerId);
         System.out.println("Customer removed: " + customerId);
         return true;
     }
 
     public void displayAllCustomers() {
-        LinkedList<Customer> customerList = customers.getAllValues();
+        LinkedList<Customer> customerList = customers.getAllElements();
         
         if (customerList.empty()) {
             System.out.println("No customers registered");
@@ -222,10 +75,8 @@ public class InventorySystem {
         }
     }
 
-    // Requirement: "List All Customers Sorted Alphabetically"
-    // Phase 2: O(n log n)
     public void displayCustomersAlphabetically() {
-        LinkedList<Customer> customerList = customers.getAllValues();
+        LinkedList<Customer> customerList = customers.getAllElements();
         
         if (customerList.empty()) {
             System.out.println("No customers found");
@@ -265,23 +116,19 @@ public class InventorySystem {
   
     // ============= ORDER OPERATIONS =============
     
-    // Requirement: "Create order"
-    // Phase 2: O(log n)
     public boolean createOrder(Order order) {
         if (order == null || !order.isValidOrder()) {
             System.out.println("Invalid order data");
             return false;
         }
         
-        // Check if customer exists - O(log n)
         Customer customer = findCustomer(order.getCustomerId());
         if (customer == null) {
             System.out.println("Customer not found: " + order.getCustomerId());
             return false;
         }
         
-        // Check if order already exists - O(log n)
-        if (orders.search(order.getOrderId()) != null) {
+        if (orders.find(order.getOrderId())) {
             System.out.println("Order with ID " + order.getOrderId() + " already exists");
             return false;
         }
@@ -292,14 +139,13 @@ public class InventorySystem {
         return true;
     }
 
-    // Requirement: "Search order by ID"
-    // Phase 2: O(log n) - BST Search
     public Order findOrder(int orderId) {
-        return orders.search(orderId);
+        if (orders.find(orderId)) {
+            return orders.retrieve();
+        }
+        return null;
     }
 
-    // Requirement: "Cancel order"
-    // Phase 2: O(log n)
     public boolean cancelOrder(int orderId) {
         Order order = findOrder(orderId);
         if (order == null) {
@@ -316,8 +162,6 @@ public class InventorySystem {
         return true;
     }
 
-    // Requirement: "Update order status"
-    // Phase 2: O(log n)
     public boolean updateOrderStatus(int orderId, String newStatus) {
         Order order = findOrder(orderId);
         if (order == null) {
@@ -329,11 +173,9 @@ public class InventorySystem {
         return true;
     }
 
-    // Requirement: "All Orders between two dates"
-    // Phase 2: O(n) - must traverse all orders
     public LinkedList<Order> findOrdersBetweenDates(LocalDate startDate, LocalDate endDate) {
         LinkedList<Order> result = new LinkedList<>();
-        LinkedList<Order> allOrders = orders.getAllValues();
+        LinkedList<Order> allOrders = orders.getAllElements();
         
         if (allOrders.empty()) {
             return result;
@@ -352,11 +194,9 @@ public class InventorySystem {
         return result;
     }
 
-    // Requirement: "Customer Order History"
-    // Phase 2: O(log n) to find customer + O(m) for m orders
     public LinkedList<Order> getCustomerOrderHistory(int customerId) {
         LinkedList<Order> result = new LinkedList<>();
-        Customer customer = customers.search(customerId);
+        Customer customer = findCustomer(customerId);
         
         if (customer == null) {
             System.out.println("Customer not found: " + customerId);
@@ -371,7 +211,7 @@ public class InventorySystem {
         orderIds.findFirst();
         while (true) {
             int orderId = orderIds.retrieve();
-            Order order = orders.search(orderId); // O(log n) for each
+            Order order = findOrder(orderId);
             if (order != null) {
                 result.addLast(order);
             }
@@ -383,7 +223,7 @@ public class InventorySystem {
     }
 
     public void displayAllOrders() {
-        LinkedList<Order> orderList = orders.getAllValues();
+        LinkedList<Order> orderList = orders.getAllElements();
         
         if (orderList.empty()) {
             System.out.println("No orders found");
@@ -402,16 +242,13 @@ public class InventorySystem {
     
     // ============= PRODUCT OPERATIONS =============
     
-    // Requirement: "Add product"
-    // Phase 2: O(log n)
     public boolean addProduct(Product product) {
         if (product == null || !product.isValidProduct()) {
             System.out.println("Invalid product data");
             return false;
         }
         
-        // Check if product already exists - O(log n)
-        if (products.search(product.getProductId()) != null) {
+        if (products.find(product.getProductId())) {
             System.out.println("Product with ID " + product.getProductId() + " already exists");
             return false;
         }
@@ -421,16 +258,15 @@ public class InventorySystem {
         return true;
     }
 
-    // Requirement: "Search by ID"
-    // Phase 2: O(log n) - BST Search
     public Product findProductById(int productId) {
-        return products.search(productId);
+        if (products.find(productId)) {
+            return products.retrieve();
+        }
+        return null;
     }
 
-    // Requirement: "Search by name"
-    // Phase 2: O(n) - must traverse all products
     public Product findProductByName(String name) {
-        LinkedList<Product> productList = products.getAllValues();
+        LinkedList<Product> productList = products.getAllElements();
         
         if (productList.empty()) {
             return null;
@@ -448,21 +284,17 @@ public class InventorySystem {
         return null;
     }
 
-    // Requirement: "Remove product"
-    // Phase 2: O(log n)
     public boolean removeProduct(int productId) {
-        if (products.search(productId) == null) {
+        if (!products.find(productId)) {
             System.out.println("Product not found: " + productId);
             return false;
         }
         
-        products.delete(productId);
+        products.remove(productId);
         System.out.println("Product removed: " + productId);
         return true;
     }
 
-    // Requirement: "Update product"
-    // Phase 2: O(log n)
     public boolean updateProduct(int productId, String newName, double newPrice, int newStock) {
         Product product = findProductById(productId);
         if (product == null) {
@@ -484,11 +316,9 @@ public class InventorySystem {
         return true;
     }
 
-    // Requirement: "List All Products Within a Price Range"
-    // Phase 2: O(n)
     public LinkedList<Product> findProductsByPriceRange(double minPrice, double maxPrice) {
         LinkedList<Product> result = new LinkedList<>();
-        LinkedList<Product> allProducts = products.getAllValues();
+        LinkedList<Product> allProducts = products.getAllElements();
         
         if (allProducts.empty()) {
             return result;
@@ -524,11 +354,9 @@ public class InventorySystem {
         }
     }
 
-    // Requirement: "Track out-of-stock products"
-    // Phase 2: O(n)
     public LinkedList<Product> getOutOfStockProducts() {
         LinkedList<Product> outOfStock = new LinkedList<>();
-        LinkedList<Product> allProducts = products.getAllValues();
+        LinkedList<Product> allProducts = products.getAllElements();
         
         if (allProducts.empty()) {
             return outOfStock;
@@ -565,7 +393,7 @@ public class InventorySystem {
     }
 
     public void displayAllProducts() {
-        LinkedList<Product> productList = products.getAllValues();
+        LinkedList<Product> productList = products.getAllElements();
         
         if (productList.empty()) {
             System.out.println("No products available");
@@ -584,28 +412,23 @@ public class InventorySystem {
 
     // ============= REVIEW OPERATIONS =============
     
-    // Add review
-    // Phase 2: O(log n)
     public boolean addReview(Review review) {
         if (review == null || !review.isValidReview()) {
             System.out.println("Invalid review data");
             return false;
         }
         
-        // Check if product exists
-        if (products.search(review.getProductId()) == null) {
+        if (!products.find(review.getProductId())) {
             System.out.println("Product not found: " + review.getProductId());
             return false;
         }
         
-        // Check if customer exists
-        if (customers.search(review.getCustomerId()) == null) {
+        if (!customers.find(review.getCustomerId())) {
             System.out.println("Customer not found: " + review.getCustomerId());
             return false;
         }
         
-        // Check if review already exists
-        if (reviews.search(review.getReviewId()) != null) {
+        if (reviews.find(review.getReviewId())) {
             System.out.println("Review with ID " + review.getReviewId() + " already exists");
             return false;
         }
@@ -615,17 +438,16 @@ public class InventorySystem {
         return true;
     }
 
-    // Find review
-    // Phase 2: O(log n)
     public Review findReview(int reviewId) {
-        return reviews.search(reviewId);
+        if (reviews.find(reviewId)) {
+            return reviews.retrieve();
+        }
+        return null;
     }
 
-    // Get reviews for a product
-    // Phase 2: O(n)
     public LinkedList<Review> getProductReviews(int productId) {
         LinkedList<Review> productReviews = new LinkedList<>();
-        LinkedList<Review> allReviews = reviews.getAllValues();
+        LinkedList<Review> allReviews = reviews.getAllElements();
         
         if (allReviews.empty()) {
             return productReviews;
@@ -644,39 +466,31 @@ public class InventorySystem {
         return productReviews;
     }
 
-    // Requirement: "Show Top 3 Most Reviewed Products"
-    // Phase 2: O(n)
     public LinkedList<Product> getTop3MostReviewedProducts() {
-        LinkedList<Product> allProducts = products.getAllValues();
+        LinkedList<Product> allProducts = products.getAllElements();
         
         if (allProducts.empty()) {
             return new LinkedList<>();
         }
         
-        // Array to store top 3 products
         Product[] top3 = new Product[3];
         int[] reviewCounts = new int[3];
         
-        // Initialize with -1
         for (int i = 0; i < 3; i++) {
             reviewCounts[i] = -1;
         }
         
-        // Traverse all products
         allProducts.findFirst();
         while (true) {
             Product product = allProducts.retrieve();
             int reviewCount = getProductReviews(product.getProductId()).size();
             
-            // Check if this product should be in top 3
             for (int i = 0; i < 3; i++) {
                 if (reviewCount > reviewCounts[i]) {
-                    // Shift down
                     for (int j = 2; j > i; j--) {
                         reviewCounts[j] = reviewCounts[j-1];
                         top3[j] = top3[j-1];
                     }
-                    // Insert
                     reviewCounts[i] = reviewCount;
                     top3[i] = product;
                     break;
@@ -687,7 +501,6 @@ public class InventorySystem {
             allProducts.findNext();
         }
         
-        // Convert to LinkedList
         LinkedList<Product> result = new LinkedList<>();
         for (int i = 0; i < 3; i++) {
             if (top3[i] != null) {
@@ -720,40 +533,32 @@ public class InventorySystem {
         }
     }
 
-    // Requirement: "Show Top 3 Highest Rated Products"
-    // Phase 2: O(n)
     public LinkedList<Product> getTop3HighestRatedProducts() {
-        LinkedList<Product> allProducts = products.getAllValues();
+        LinkedList<Product> allProducts = products.getAllElements();
         
         if (allProducts.empty()) {
             return new LinkedList<>();
         }
         
-        // Array to store top 3 products
         Product[] top3 = new Product[3];
         double[] ratings = new double[3];
         
-        // Initialize with -1
         for (int i = 0; i < 3; i++) {
             ratings[i] = -1;
         }
         
-        // Traverse all products
         allProducts.findFirst();
         while (true) {
             Product product = allProducts.retrieve();
             double avgRating = calculateAverageRating(product.getProductId());
             
-            if (avgRating > 0) { // Only consider products with reviews
-                // Check if this product should be in top 3
+            if (avgRating > 0) {
                 for (int i = 0; i < 3; i++) {
                     if (avgRating > ratings[i]) {
-                        // Shift down
                         for (int j = 2; j > i; j--) {
                             ratings[j] = ratings[j-1];
                             top3[j] = top3[j-1];
                         }
-                        // Insert
                         ratings[i] = avgRating;
                         top3[i] = product;
                         break;
@@ -765,7 +570,6 @@ public class InventorySystem {
             allProducts.findNext();
         }
         
-        // Convert to LinkedList
         LinkedList<Product> result = new LinkedList<>();
         for (int i = 0; i < 3; i++) {
             if (top3[i] != null) {
@@ -797,7 +601,6 @@ public class InventorySystem {
         }
     }
 
-    // Calculate average rating for a product
     private double calculateAverageRating(int productId) {
         LinkedList<Review> productReviews = getProductReviews(productId);
         
@@ -819,12 +622,10 @@ public class InventorySystem {
         return (double) total / count;
     }
 
-    // Requirement: "Customers Who Reviewed a Product (sorted by customer ID)"
-    // Phase 2: O(log n) + O(r Ã— log m) + O(r log r) where r = reviews, m = customers
     public LinkedList<Customer> findCustomersWhoReviewedProduct(int productId) {
         LinkedList<Customer> result = new LinkedList<>();
         
-        if (products.search(productId) == null) {
+        if (!products.find(productId)) {
             System.out.println("Product not found: " + productId);
             return result;
         }
@@ -835,11 +636,10 @@ public class InventorySystem {
             return result;
         }
         
-        // Get all customers who reviewed
         productReviews.findFirst();
         while (true) {
             int customerId = productReviews.retrieve().getCustomerId();
-            Customer customer = customers.search(customerId); // O(log n)
+            Customer customer = findCustomer(customerId);
             if (customer != null) {
                 result.addLast(customer);
             }
@@ -847,9 +647,8 @@ public class InventorySystem {
             productReviews.findNext();
         }
         
-        // Sort by customerId (as required)
+        // Sort by customerId
         if (!result.empty()) {
-            // Convert to array for sorting
             int size = 0;
             result.findFirst();
             while (true) {
@@ -867,7 +666,6 @@ public class InventorySystem {
                 result.findNext();
             }
             
-            // Bubble sort by customerId
             for (int i = 0; i < size - 1; i++) {
                 for (int j = 0; j < size - i - 1; j++) {
                     if (customerArray[j].getCustomerId() > customerArray[j + 1].getCustomerId()) {
@@ -878,7 +676,6 @@ public class InventorySystem {
                 }
             }
             
-            // Convert back to LinkedList
             LinkedList<Customer> sortedResult = new LinkedList<>();
             for (int i = 0; i < size; i++) {
                 sortedResult.addLast(customerArray[i]);
@@ -898,7 +695,7 @@ public class InventorySystem {
             return;
         }
         
-        Product product = products.search(productId);
+        Product product = findProductById(productId);
         System.out.println("=== Customers Who Reviewed: " + product.getName() + " ===");
         reviewers.findFirst();
         while (true) {
@@ -910,7 +707,7 @@ public class InventorySystem {
     }
 
     public void displayAllReviews() {
-        LinkedList<Review> reviewList = reviews.getAllValues();
+        LinkedList<Review> reviewList = reviews.getAllElements();
         
         if (reviewList.empty()) {
             System.out.println("No reviews found");
@@ -930,7 +727,7 @@ public class InventorySystem {
     // ============= HELPER METHODS =============
     
     private void removeCustomerOrders(int customerId) {
-        LinkedList<Order> allOrders = orders.getAllValues();
+        LinkedList<Order> allOrders = orders.getAllElements();
         
         if (allOrders.empty()) {
             return;
@@ -940,7 +737,7 @@ public class InventorySystem {
         while (true) {
             Order order = allOrders.retrieve();
             if (order.getCustomerId() == customerId) {
-                orders.delete(order.getOrderId());
+                orders.remove(order.getOrderId());
             }
             if (allOrders.last()) break;
             allOrders.findNext();
@@ -968,7 +765,7 @@ public class InventorySystem {
 
     public double calculateTotalRevenue() {
         double total = 0.0;
-        LinkedList<Order> allOrders = orders.getAllValues();
+        LinkedList<Order> allOrders = orders.getAllElements();
         
         if (allOrders.empty()) {
             return total;
@@ -1011,7 +808,7 @@ public class InventorySystem {
             System.out.println("Loading customers from: " + filename);
             
             if (scanner.hasNextLine()) {
-                scanner.nextLine(); // Skip header
+                scanner.nextLine();
             }
             
             while (scanner.hasNextLine()) {
@@ -1043,7 +840,7 @@ public class InventorySystem {
             System.out.println("Loading products from: " + filename);
             
             if (scanner.hasNextLine()) {
-                scanner.nextLine(); // Skip header
+                scanner.nextLine();
             }
             
             while (scanner.hasNextLine()) {
@@ -1076,7 +873,7 @@ public class InventorySystem {
             System.out.println("Loading orders from: " + filename);
             
             if (scanner.hasNextLine()) {
-                scanner.nextLine(); // Skip header
+                scanner.nextLine();
             }
             
             while (scanner.hasNextLine()) {
@@ -1112,7 +909,7 @@ public class InventorySystem {
             System.out.println("Loading reviews from: " + filename);
             
             if (scanner.hasNextLine()) {
-                scanner.nextLine(); // Skip header
+                scanner.nextLine();
             }
             
             while (scanner.hasNextLine()) {
