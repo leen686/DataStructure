@@ -14,7 +14,7 @@ public class InventorySystem {
     private AVL_int<Order> orders;
     private AVL_int<Product> products;
     private AVLString<Product> productsByName;
-    private LinkedList<Review> reviews;
+    private AVL_int<Review> reviews;
     
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
@@ -23,7 +23,7 @@ public class InventorySystem {
         this.orders = new AVL_int<>();
         this.products = new AVL_int<>();
         this.productsByName = new AVLString<>();
-        this.reviews = new LinkedList<>();
+        this.reviews = new AVL_int<>();
     }
 
     // CUSTOMER OPERATIONS 
@@ -319,7 +319,7 @@ public class InventorySystem {
             return false;
         }
         
-        reviews.addLast(review);
+        reviews.add(review.getReviewId(), review);
         product.addReview(review);
         customer.addReview(review.getReviewId());
         System.out.println("Review added successfully");
@@ -328,51 +328,42 @@ public class InventorySystem {
 
   
     public boolean editReview(int reviewId, int newRating, String newComment) {
-        if (reviews.empty()) {
-            System.out.println("No reviews in the system");
+        Review review = reviews.getData(reviewId);
+        
+        if (review == null) {
+            System.out.println("Review not found: " + reviewId);
             return false;
         }
         
-        reviews.findFirst();
-        while (true) {
-            Review review = reviews.retrieve();
-            if (review.getReviewId() == reviewId) {
-                if (newRating >= 1 && newRating <= 5) {
-                    review.setRating(newRating);
-                }
-                if (newComment != null) {
-                    review.setComment(newComment);
-                }
-                System.out.println("Review updated successfully");
-                return true;
-            }
-            if (reviews.last()) break;
-            reviews.findNext();
+        if (newRating >= 1 && newRating <= 5) {
+            review.setRating(newRating);
+        }
+        if (newComment != null) {
+            review.setComment(newComment);
         }
         
-        System.out.println("Review not found: " + reviewId);
-        return false;
+        System.out.println("Review updated successfully");
+        return true;
     }
 
     
     public LinkedList<Review> getCustomerReviews(int customerId) {
         LinkedList<Review> customerReviews = new LinkedList<>();
-        
-        if (reviews.empty()) {
-            return customerReviews;
-        }
-        
-        reviews.findFirst();
-        while (true) {
-            Review review = reviews.retrieve();
-            if (review.getCustomerId() == customerId) {
-                customerReviews.addLast(review);
-            }
-            if (reviews.last()) break;
-            reviews.findNext();
-        }
-        
+        collectCustomerReviews(reviews.getRoot(), customerId, customerReviews);
         return customerReviews;
+    }
+    
+    private void collectCustomerReviews(AVLNode<Review> node, int customerId, 
+                                       LinkedList<Review> result) {
+        if (node == null) return;
+        
+        collectCustomerReviews(node.left, customerId, result);
+        
+        if (node.data.getCustomerId() == customerId) {
+            result.addLast(node.data);
+        }
+        
+        collectCustomerReviews(node.right, customerId, result);
     }
 
  
@@ -588,26 +579,14 @@ public class InventorySystem {
         System.out.println("\nCUSTOMERS WHO REVIEWED: " + product.getName());
         System.out.println("================");
         
-        if (reviews.empty()) {
+        if (reviews.isEmpty()) {
             System.out.println("No reviews found");
             System.out.println("================\n");
             return;
         }
         
         LinkedList<ReviewerPair> pairs = new LinkedList<>();
-        
-        reviews.findFirst();
-        while (true) {
-            Review review = reviews.retrieve();
-            if (review.getProductId() == productId) {
-                Customer customer = findCustomer(review.getCustomerId());
-                if (customer != null) {
-                    pairs.addLast(new ReviewerPair(customer, review));
-                }
-            }
-            if (reviews.last()) break;
-            reviews.findNext();
-        }
+        collectProductReviewers(reviews.getRoot(), productId, pairs);
         
         if (pairs.empty()) {
             System.out.println("No reviews for this product");
@@ -627,6 +606,22 @@ public class InventorySystem {
             }
         }
         System.out.println("================\n");
+    }
+    
+    private void collectProductReviewers(AVLNode<Review> node, int productId, 
+                                        LinkedList<ReviewerPair> pairs) {
+        if (node == null) return;
+        
+        collectProductReviewers(node.left, productId, pairs);
+        
+        if (node.data.getProductId() == productId) {
+            Customer customer = findCustomer(node.data.getCustomerId());
+            if (customer != null) {
+                pairs.addLast(new ReviewerPair(customer, node.data));
+            }
+        }
+        
+        collectProductReviewers(node.right, productId, pairs);
     }
     
     private class ReviewerPair {
@@ -748,7 +743,7 @@ public class InventorySystem {
 
 
     public int getTotalReviews() {
-        return reviews.size();
+        return reviews.countNodes();
     }
 
     
@@ -811,20 +806,6 @@ public class InventorySystem {
         }
         
         removeCustomerOrdersHelper(node.right, customerId);
-    }
-
-    private boolean isProductInList(LinkedList<Product> list, int productId) {
-        if (list.empty()) return false;
-        
-        list.findFirst();
-        while (true) {
-            if (list.retrieve().getProductId() == productId) {
-                return true;
-            }
-            if (list.last()) break;
-            list.findNext();
-        }
-        return false;
     }
 
 

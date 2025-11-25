@@ -57,9 +57,9 @@ public class Main {
         }
     }
     
-  
+    // ============================================
     // CUSTOMER MENU
-   
+    // ============================================
     public static void customerMenu(Scanner input, InventorySystem system) {
         while (true) {
             System.out.println("\n**************************************************");
@@ -69,7 +69,7 @@ public class Main {
             System.out.println("2. Find Customer by ID");
             System.out.println("3. Display All Customers");
             System.out.println("4. Remove Customer");
-            System.out.println("5. Place order for specific customer");
+            System.out.println("5. Place Order for Customer");
             System.out.println("6. View Customer Order History");
             System.out.println("7. Back to Main Menu");
             System.out.println("**************************************************");
@@ -89,72 +89,83 @@ public class Main {
                     String email = input.nextLine();
                     system.registerCustomer(new Customer(id, name, email));
                     break;
+                    
                 case 2:
                     System.out.print("Customer ID: ");
                     Customer c = system.findCustomer(input.nextInt());
-                    if (c != null) c.displayDetailedInfo(system);
-                    else System.out.println("Customer not found!");
-                    break;
-                case 3:
-                    system.displayAllCustomers();
-                    break;
-                case 4:
-                    System.out.print("Customer ID: ");
-                    if (!system.removeCustomer(input.nextInt())) {
+                    if (c != null) {
+                        c.display();
+                    } else {
                         System.out.println("Customer not found!");
                     }
                     break;
-            case 5: 
-             System.out.println("=== Place Order ===");
-             System.out.print("Customer ID: ");
-             int custId = input.nextInt();
-            Customer customer = system.findCustomer(custId);
-    
-           if (customer == null) {
-          System.out.println("Customer not found!");
-          break;
-           }
-    
-           System.out.print("Order ID to add: ");
-           int orderId = input.nextInt();
-    
-  
-          Order existingOrder = system.findOrder(orderId);
-          if (existingOrder == null) {
-        System.out.println("Order " + orderId + " does not exist in the system!");
-        System.out.println("Please create the order first using 'Create Order'");
-        break;
-          }
-        customer.placeOrder(orderId);
-       break;
                     
-                case 6:
+                case 3:
+                    system.displayAllCustomers();
+                    break;
+                    
+                case 4:
+                    System.out.print("Customer ID: ");
+                    system.removeCustomer(input.nextInt());
+                    break;
+                    
+                case 5:
+                    System.out.print("Customer ID: ");
+                    int custId = input.nextInt();
+                    Customer customer = system.findCustomer(custId);
+                    
+                    if (customer == null) {
+                        System.out.println("Customer not found!");
+                        break;
+                    }
+                    
+                    System.out.print("Order ID to add: ");
+                    int orderId = input.nextInt();
+                    
+                    Order existingOrder = system.findOrder(orderId);
+                    if (existingOrder == null) {
+                        System.out.println("Order " + orderId + " does not exist in the system!");
+                        System.out.println("Please create the order first using 'Create Order'");
+                        break;
+                    }
+                    
+                    customer.placeOrder(orderId);
+                    System.out.println("Order " + orderId + " added to customer " + custId);
+                    break;
+                    
+               case 6:
                     System.out.print("Customer ID: ");
                     int histId = input.nextInt();
                     LinkedList<Order> history = system.getCustomerOrderHistory(histId);
                     if (history.empty()) {
-                        System.out.println("No orders found!");
+                        System.out.println("No orders found for this customer!");
                     } else {
-                        System.out.println("=== Order History ===");
+                        System.out.println("\n=== Order History for Customer " + histId + " ===");
+                        int count = 0;
                         history.findFirst();
                         while (true) {
-                            history.retrieve().displayBriefInfo();
+                            count++;
+                            System.out.println("\nOrder #" + count);
+                            history.retrieve().display();
+                            System.out.println("---");
                             if (history.last()) break;
                             history.findNext();
                         }
                     }
                     break;
+                    
                 case 7:
                     return;
+                    
                 default:
                     System.out.println("Invalid choice!");
             }
         }
     }
     
-   
+    // ============================================
     // PRODUCT MENU
-   
+    // ============================================
     public static void productMenu(Scanner input, InventorySystem system) {
         while (true) {
             System.out.println("\n**************************************************");
@@ -164,11 +175,12 @@ public class Main {
             System.out.println("2. Search Product by ID");
             System.out.println("3. Search Product by Name");
             System.out.println("4. Display All Products");
-            System.out.println("5. Update Product");
-            System.out.println("6. Remove Product");
-            System.out.println("7. Display Out of Stock Products");
-            System.out.println("8. product average rating ");
-            System.out.println("9. Back to Main Menu");
+            System.out.println("5. Display Products by Name (Alphabetical)");
+            System.out.println("6. Update Product");
+            System.out.println("7. Remove Product");
+            System.out.println("8. Display Out of Stock Products");
+            System.out.println("9. View Product Average Rating");
+            System.out.println("10. Back to Main Menu");
             System.out.println("**************************************************");
             System.out.print("Choice: ");
             
@@ -188,26 +200,40 @@ public class Main {
                     int stock = input.nextInt();
                     system.addProduct(new Product(id, name, price, stock));
                     break;
+                    
                 case 2:
                     System.out.print("Product ID: ");
                     Product p = system.findProductById(input.nextInt());
-                    if (p != null) p.display();
-                    else System.out.println("Product not found!");
+                    if (p != null) {
+                        p.display();
+                    } else {
+                        System.out.println("Product not found!");
+                    }
                     break;
+                    
                 case 3:
                     System.out.print("Product Name: ");
                     Product p2 = system.findProductByName(input.nextLine());
-                    if (p2 != null) p2.display();
-                    else System.out.println("Product not found!");
+                    if (p2 != null) {
+                        p2.display();
+                    } else {
+                        System.out.println("Product not found!");
+                    }
                     break;
+                    
                 case 4:
                     system.displayAllProducts();
                     break;
+                    
                 case 5:
+                    system.displayProductsByName();
+                    break;
+                    
+                case 6:
                     System.out.print("Product ID: ");
                     int upId = input.nextInt();
                     input.nextLine();
-                    System.out.print("New Name (or Enter to skip): ");
+                    System.out.print("New Name (or press Enter to skip): ");
                     String upName = input.nextLine();
                     System.out.print("New Price (-1 to skip): ");
                     double upPrice = input.nextDouble();
@@ -215,36 +241,40 @@ public class Main {
                     int upStock = input.nextInt();
                     system.updateProduct(upId, upName, upPrice, upStock);
                     break;
-                case 6:
-                    System.out.print("Product ID: ");
-                    if (!system.removeProduct(input.nextInt())) {
-                        System.out.println("Product not found!");
-                    }
-                    break;
+                    
                 case 7:
+                    System.out.print("Product ID: ");
+                    system.removeProduct(input.nextInt());
+                    break;
+                    
+                case 8:
                     system.displayOutOfStockProducts();
                     break;
-                     case 8:
+                    
+                case 9:
                     System.out.print("Product ID: ");
                     Product pr = system.findProductById(input.nextInt());
                     if (pr != null) {
                         System.out.println("Product: " + pr.getName());
-                        System.out.println("Average Rating: " + pr.getAverageRating() + "/5");
+                        System.out.println("Average Rating: " + String.format("%.2f", pr.getAverageRating()) + "/5.0");
+                        System.out.println("Total Reviews: " + pr.getReviewCount());
                     } else {
                         System.out.println("Product not found!");
                     }
                     break;
-                case 9:
+                    
+                case 10:
                     return;
+                    
                 default:
                     System.out.println("Invalid choice!");
             }
         }
     }
     
-   
+    // ============================================
     // ORDER MENU
-
+    // ============================================
     public static void orderMenu(Scanner input, InventorySystem system) {
         while (true) {
             System.out.println("\n**************************************************");
@@ -292,15 +322,21 @@ public class Main {
                                          LocalDate.now(), "pending"));
                     }
                     break;
+                    
                 case 2:
                     System.out.print("Order ID: ");
                     Order o = system.findOrder(input.nextInt());
-                    if (o != null) o.displayFullDetails();
-                    else System.out.println("Order not found!");
+                    if (o != null) {
+                        o.display();
+                    } else {
+                        System.out.println("Order not found!");
+                    }
                     break;
+                    
                 case 3:
                     system.displayAllOrders();
                     break;
+                    
                 case 4:
                     System.out.print("Order ID: ");
                     int upId = input.nextInt();
@@ -308,21 +344,24 @@ public class Main {
                     System.out.print("New Status (pending/shipped/delivered/canceled): ");
                     system.updateOrderStatus(upId, input.nextLine());
                     break;
+                    
                 case 5:
                     System.out.print("Order ID: ");
                     system.cancelOrder(input.nextInt());
                     break;
+                    
                 case 6:
                     return;
+                    
                 default:
                     System.out.println("Invalid choice!");
             }
         }
     }
     
-
+    // ============================================
     // REVIEW MENU
-  
+    // ============================================
     public static void reviewMenu(Scanner input, InventorySystem system) {
         while (true) {
             System.out.println("\n**************************************************");
@@ -330,9 +369,8 @@ public class Main {
             System.out.println("**************************************************");
             System.out.println("1. Add Review");
             System.out.println("2. Edit Review");
-            System.out.println("3. Customer Reviews");
-            System.out.println("4. Display All Reviews");
-            System.out.println("5. Back to Main Menu");
+            System.out.println("3. View Customer Reviews");
+            System.out.println("4. Back to Main Menu");
             System.out.println("**************************************************");
             System.out.print("Choice: ");
             
@@ -354,20 +392,48 @@ public class Main {
                     String comment = input.nextLine();
                     system.addReview(new Review(rid, pid, cid, rating, comment));
                     break;
-                case 4:
-                    system.displayAllReviews();
+                    
+                case 2:
+                    System.out.print("Review ID: ");
+                    int editId = input.nextInt();
+                    System.out.print("New Rating (1-5): ");
+                    int newRating = input.nextInt();
+                    input.nextLine();
+                    System.out.print("New Comment: ");
+                    String newComment = input.nextLine();
+                    system.editReview(editId, newRating, newComment);
                     break;
-                case 5:
+                    
+                case 3:
+                    System.out.print("Customer ID: ");
+                    int custId = input.nextInt();
+                    LinkedList<Review> custReviews = system.getCustomerReviews(custId);
+                    if (custReviews.empty()) {
+                        System.out.println("No reviews found for this customer.");
+                    } else {
+                        System.out.println("\n=== Customer Reviews ===");
+                        custReviews.findFirst();
+                        while (true) {
+                            custReviews.retrieve().display();
+                            System.out.println("---");
+                            if (custReviews.last()) break;
+                            custReviews.findNext();
+                        }
+                    }
+                    break;
+                    
+                case 4:
                     return;
+                    
                 default:
                     System.out.println("Invalid choice!");
             }
         }
     }
     
- 
+    // ============================================
     // ADVANCED QUERIES MENU (PHASE 2 REQUIREMENTS)
-    
+    // ============================================
     public static void advancedQueriesMenu(Scanner input, InventorySystem system) {
         while (true) {
             System.out.println("\n**************************************************");
@@ -375,11 +441,10 @@ public class Main {
             System.out.println("**************************************************");
             System.out.println("1. Find Orders Between Two Dates");
             System.out.println("2. List Products Within Price Range");
-            System.out.println("3. Show Top 3 Most Reviewed Products");
-            System.out.println("4. Show Top 3 Highest Rated Products");
-            System.out.println("5. List Customers Sorted Alphabetically");
-            System.out.println("6. Show Customers Who Reviewed a Product");
-            System.out.println("7. Back to Main Menu");
+            System.out.println("3. Show Top 3 Products by Rating");
+            System.out.println("4. List Customers Sorted Alphabetically");
+            System.out.println("5. Show Customers Who Reviewed a Product");
+            System.out.println("6. Back to Main Menu");
             System.out.println("**************************************************");
             System.out.print("Choice: ");
             
@@ -388,7 +453,6 @@ public class Main {
             
             switch (choice) {
                 case 1:
-                   
                     System.out.print("Start Date (YYYY-MM-DD): ");
                     LocalDate start = LocalDate.parse(input.nextLine());
                     System.out.print("End Date (YYYY-MM-DD): ");
@@ -400,8 +464,12 @@ public class Main {
                     } else {
                         System.out.println("\n=== Orders Between " + start + " and " + end + " ===");
                         orders.findFirst();
+                        int count = 0;
                         while (true) {
-                            orders.retrieve().displayBriefInfo();
+                            count++;
+                            System.out.println("\n" + count + ".");
+                            orders.retrieve().display();
+                            System.out.println("---");
                             if (orders.last()) break;
                             orders.findNext();
                         }
@@ -409,37 +477,44 @@ public class Main {
                     break;
                     
                 case 2:
-                   
                     System.out.print("Minimum Price: ");
                     double minPrice = input.nextDouble();
                     System.out.print("Maximum Price: ");
                     double maxPrice = input.nextDouble();
-                    system.displayProductsInPriceRange(minPrice, maxPrice);
+                    
+                    LinkedList<Product> priceProducts = system.findProductsInPriceRange(minPrice, maxPrice);
+                    if (priceProducts.empty()) {
+                        System.out.println("No products found in this price range.");
+                    } else {
+                        System.out.println("\n=== Products in Price Range $" + minPrice + " - $" + maxPrice + " ===");
+                        priceProducts.findFirst();
+                        int count = 0;
+                        while (true) {
+                            count++;
+                            System.out.println("\n" + count + ".");
+                            priceProducts.retrieve().display();
+                            System.out.println("---");
+                            if (priceProducts.last()) break;
+                            priceProducts.findNext();
+                        }
+                    }
                     break;
                     
                 case 3:
-
-                    system.displayTop3MostReviewedProducts();
+                    system.displayTop3Products();
                     break;
                     
                 case 4:
-              
-                    system.displayTop3HighestRatedProducts();
-                    break;
-                    
-                case 5:
-                  
                     system.displayCustomersAlphabetically();
                     break;
                     
-                case 6:
-                   
+                case 5:
                     System.out.print("Product ID: ");
                     int productId = input.nextInt();
                     system.displayCustomersWhoReviewedProduct(productId);
                     break;
                     
-                case 7:
+                case 6:
                     return;
                     
                 default:

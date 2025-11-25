@@ -274,4 +274,8 @@ public class AVL_int<T> {
             collectRange(node.right, min, max, result);
         }
     }
+
+    int size() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
 }
