@@ -1,12 +1,11 @@
 package datastructureproject;
 
-// BST Node class
-class TreeNode<K extends Comparable<K>, T> {
-    public K key;
+class BSTNode<T> {
+    public int key;
     public T data;
-    public TreeNode<K, T> left, right;
-
-    public TreeNode(K key, T data) {
+    public BSTNode<T> left, right;
+    
+    public BSTNode(int key, T data) {
         this.key = key;
         this.data = data;
         this.left = null;
@@ -14,186 +13,266 @@ class TreeNode<K extends Comparable<K>, T> {
     }
 }
 
-// Binary Search Tree implementation
-public class BSTree<K extends Comparable<K>, T> {
-    private TreeNode<K, T> root, current;
+public class BST_int<T> {
+    private BSTNode<T> root;
+    private BSTNode<T> current;
     
-    public BSTree() {
-        this.root = null;
-        this.current = null;
+    public BST_int() {
+        root = null;
+        current = null;
     }
     
-    public TreeNode<K, T> getRoot() {
-        return root;
-    }
+    // ============ Basic Operations ============
     
-    public boolean empty() {
+    public boolean isEmpty() {
         return root == null;
     }
     
-    public boolean full() {
-        return false;
-    }
-    
-    public T retrieve() {
+    public T getCurrent() {
+        if (current == null) {
+            return null;
+        }
         return current.data;
     }
     
-    // Find element by key
-    public boolean find(K key) {
-        TreeNode<K, T> p = root;
-        while (p != null) {
-            if (key.compareTo(p.key) == 0) {
-                current = p;
+    public BSTNode<T> getRoot() {
+        return root;
+    }
+    
+    // ============ Search Operations ============
+    
+    public boolean search(int key) {
+        if (root == null) {
+            return false;
+        }
+        
+        BSTNode<T> temp = root;
+        while (temp != null) {
+            current = temp;
+            if (key == temp.key) {
                 return true;
-            } else if (key.compareTo(p.key) < 0) {
-                p = p.left;
+            } else if (key < temp.key) {
+                temp = temp.left;
             } else {
-                p = p.right;
+                temp = temp.right;
             }
         }
         return false;
     }
     
-    // Insert new element
-    public boolean insert(K key, T val) {
+    public T getData(int key) {
+        if (search(key)) {
+            return current.data;
+        }
+        return null;
+    }
+    
+    // ============ Insert Operation ============
+    
+    public boolean add(int key, T value) {
         if (root == null) {
-            current = root = new TreeNode<K, T>(key, val);
+            root = new BSTNode<T>(key, value);
+            current = root;
             return true;
         }
         
-        TreeNode<K, T> p = root;
-        TreeNode<K, T> q = null;
+        BSTNode<T> parent = null;
+        BSTNode<T> temp = root;
         
-        while (p != null) {
-            int res = key.compareTo(p.key);
-            if (res == 0) {
-                // Key already exists, update data
-                p.data = val;
-                current = p;
-                return false;
+        while (temp != null) {
+            parent = temp;
+            if (key == temp.key) {
+                current = temp;
+                return false; // Key already exists
+            } else if (key < temp.key) {
+                temp = temp.left;
             } else {
-                q = p;
-                if (res < 0) {
-                    p = p.left;
-                } else {
-                    p = p.right;
-                }
+                temp = temp.right;
             }
         }
         
-        TreeNode<K, T> newNode = new TreeNode<K, T>(key, val);
-        if (key.compareTo(q.key) < 0) {
-            q.left = newNode;
+        BSTNode<T> newNode = new BSTNode<T>(key, value);
+        if (key < parent.key) {
+            parent.left = newNode;
         } else {
-            q.right = newNode;
+            parent.right = newNode;
         }
         current = newNode;
         return true;
     }
     
-    // Remove element by key
-    public boolean remove(K key) {
-        K searchKey = key;
-        TreeNode<K, T> p = root;
-        TreeNode<K, T> q = null; // Parent of p
+    // ============ Update Operation ============
+    
+    public boolean update(int key, T newValue) {
+        if (search(key)) {
+            current.data = newValue;
+            return true;
+        }
+        return false;
+    }
+    
+    // ============ Delete Operation ============
+    
+    public boolean delete(int key) {
+        if (root == null) {
+            return false;
+        }
         
-        while (p != null) {
-            int res = searchKey.compareTo(p.key);
-            if (res < 0) {
-                q = p;
-                p = p.left;
-            } else if (res > 0) {
-                q = p;
-                p = p.right;
+        BSTNode<T> parent = null;
+        BSTNode<T> temp = root;
+        
+        // Search for the node
+        while (temp != null && temp.key != key) {
+            parent = temp;
+            if (key < temp.key) {
+                temp = temp.left;
             } else {
-                // Found the key
-                
-                // Case 3: Two children
-                if ((p.left != null) && (p.right != null)) {
-                    // Find min in right subtree
-                    TreeNode<K, T> min = p.right;
-                    q = p;
-                    while (min.left != null) {
-                        q = min;
-                        min = min.left;
-                    }
-                    p.key = min.key;
-                    p.data = min.data;
-                    searchKey = min.key;
-                    p = min;
-                    // Fall back to case 1 or 2
-                }
-                
-                // Case 1 or 2: One or no children
-                if (p.left != null) {
-                    p = p.left;
-                } else {
-                    p = p.right;
-                }
-                
-                if (q == null) {
-                    // No parent, root must change
-                    root = p;
-                } else {
-                    if (searchKey.compareTo(q.key) < 0) {
-                        q.left = p;
-                    } else {
-                        q.right = p;
-                    }
-                }
-                current = root;
-                return true;
+                temp = temp.right;
             }
         }
         
-        return false; // Not found
-    }
-    
-    // Get all elements using in-order traversal
-    public LinkedList<T> getAllElements() {
-        LinkedList<T> list = new LinkedList<>();
-        inOrderTraversal(root, list);
-        return list;
-    }
-    
-    private void inOrderTraversal(TreeNode<K, T> node, LinkedList<T> list) {
-        if (node == null) {
-            return;
+        if (temp == null) {
+            return false; // Key not found
         }
-        inOrderTraversal(node.left, list);
-        list.addLast(node.data);
-        inOrderTraversal(node.right, list);
+        
+        // Case 1: Node with two children
+        if (temp.left != null && temp.right != null) {
+            BSTNode<T> successorParent = temp;
+            BSTNode<T> successor = temp.right;
+            
+            while (successor.left != null) {
+                successorParent = successor;
+                successor = successor.left;
+            }
+            
+            temp.key = successor.key;
+            temp.data = successor.data;
+            
+            key = successor.key;
+            parent = successorParent;
+            temp = successor;
+        }
+        
+        // Case 2 & 3: Node with one or no children
+        BSTNode<T> child;
+        if (temp.left != null) {
+            child = temp.left;
+        } else {
+            child = temp.right;
+        }
+        
+        if (parent == null) {
+            root = child;
+        } else if (temp == parent.left) {
+            parent.left = child;
+        } else {
+            parent.right = child;
+        }
+        
+        current = root;
+        return true;
     }
     
-    // Display tree in-order
+    // ============ Traversal Operations ============
+    
     public void displayInOrder() {
         if (root == null) {
             System.out.println("Tree is empty");
-        } else {
-            displayInOrder(root);
+            return;
         }
+        inOrderTraversal(root);
     }
     
-    private void displayInOrder(TreeNode<K, T> node) {
+    private void inOrderTraversal(BSTNode<T> node) {
         if (node == null) {
             return;
         }
-        displayInOrder(node.left);
-        System.out.print("Key: " + node.key);
-        System.out.println(", Data: " + node.data);
-        displayInOrder(node.right);
+        inOrderTraversal(node.left);
+        System.out.println("Key: " + node.key + " | Data: " + node.data);
+        inOrderTraversal(node.right);
     }
     
-    // Count nodes
-    public int size() {
-        return countNodes(root);
+    public void displayPreOrder() {
+        if (root == null) {
+            System.out.println("Tree is empty");
+            return;
+        }
+        preOrderTraversal(root);
     }
     
-    private int countNodes(TreeNode<K, T> node) {
+    private void preOrderTraversal(BSTNode<T> node) {
+        if (node == null) {
+            return;
+        }
+        System.out.println("Key: " + node.key + " | Data: " + node.data);
+        preOrderTraversal(node.left);
+        preOrderTraversal(node.right);
+    }
+    
+    public void displayPostOrder() {
+        if (root == null) {
+            System.out.println("Tree is empty");
+            return;
+        }
+        postOrderTraversal(root);
+    }
+    
+    private void postOrderTraversal(BSTNode<T> node) {
+        if (node == null) {
+            return;
+        }
+        postOrderTraversal(node.left);
+        postOrderTraversal(node.right);
+        System.out.println("Key: " + node.key + " | Data: " + node.data);
+    }
+    
+    // ============ Tree Statistics ============
+    
+    public int countNodes() {
+        return countNodesHelper(root);
+    }
+    
+    private int countNodesHelper(BSTNode<T> node) {
         if (node == null) {
             return 0;
         }
-        return 1 + countNodes(node.left) + countNodes(node.right);
+        return 1 + countNodesHelper(node.left) + countNodesHelper(node.right);
+    }
+    
+    public int getHeight() {
+        return getHeightHelper(root);
+    }
+    
+    private int getHeightHelper(BSTNode<T> node) {
+        if (node == null) {
+            return 0;
+        }
+        int leftHeight = getHeightHelper(node.left);
+        int rightHeight = getHeightHelper(node.right);
+        return 1 + Math.max(leftHeight, rightHeight);
+    }
+    
+    // ============ Advanced Operations ============
+    
+    public int findMin() {
+        if (root == null) {
+            throw new RuntimeException("Tree is empty");
+        }
+        BSTNode<T> temp = root;
+        while (temp.left != null) {
+            temp = temp.left;
+        }
+        return temp.key;
+    }
+    
+    public int findMax() {
+        if (root == null) {
+            throw new RuntimeException("Tree is empty");
+        }
+        BSTNode<T> temp = root;
+        while (temp.right != null) {
+            temp = temp.right;
+        }
+        return temp.key;
     }
 }
