@@ -7,7 +7,8 @@ import java.io.FileNotFoundException;
 import java.util.Scanner;
 
 public class InventorySystem {
-     private AVL_int<Customer> customers;
+    // ============ DATA STORAGE (AVL TREES) ============
+    private AVL_int<Customer> customers;
     private AVL_int<Order> orders;
     private AVL_int<Product> products;
     private AVLString<Product> productsByName;
@@ -23,6 +24,13 @@ public class InventorySystem {
         this.reviews = new LinkedList<>();
     }
 
+    // ============================================
+    // CUSTOMER OPERATIONS - O(log n)
+    // ============================================
+    
+    /**
+     * Register new customer - O(log n)
+     */
     public boolean registerCustomer(Customer customer) {
         if (customer == null || !customer.isValidCustomer()) {
             System.out.println("Error: Invalid customer data");
@@ -38,10 +46,57 @@ public class InventorySystem {
         return added;
     }
 
+    /**
+     * Find customer by ID - O(log n)
+     */
     public Customer findCustomer(int customerId) {
         return customers.getData(customerId);
     }
 
+    /**
+     * Remove customer - O(log n)
+     */
+    public boolean removeCustomer(int customerId) {
+        removeCustomerOrders(customerId);
+        boolean removed = customers.delete(customerId);
+        if (removed) {
+            System.out.println("Customer removed: " + customerId);
+        } else {
+            System.out.println("Customer not found: " + customerId);
+        }
+        return removed;
+    }
+
+    /**
+     * Display all customers - O(n)
+     */
+    public void displayAllCustomers() {
+        if (customers.isEmpty()) {
+            System.out.println("No customers in the system");
+            return;
+        }
+        
+        System.out.println("\nALL CUSTOMERS");
+        System.out.println("================");
+        displayCustomersInOrder(customers.getRoot());
+        System.out.println("================\n");
+    }
+    
+    private void displayCustomersInOrder(AVLNode<Customer> node) {
+        if (node == null) return;
+        displayCustomersInOrder(node.left);
+        node.data.display();
+        System.out.println("----------------");
+        displayCustomersInOrder(node.right);
+    }
+
+    // ============================================
+    // PRODUCT OPERATIONS - O(log n)
+    // ============================================
+    
+    /**
+     * Add product - O(log n)
+     */
     public boolean addProduct(Product product) {
         if (product == null || !product.isValidProduct()) {
             System.out.println("Error: Invalid product data");
@@ -61,14 +116,23 @@ public class InventorySystem {
         }
     }
 
+    /**
+     * Find product by ID - O(log n)
+     */
     public Product findProductById(int productId) {
         return products.getData(productId);
     }
 
+    /**
+     * Find product by name - O(log n)
+     */
     public Product findProductByName(String name) {
         return productsByName.getData(name);
     }
 
+    /**
+     * Find multiple products by names - O(k log n)
+     */
     public LinkedList<Product> findProductsByNames(String[] names) {
         LinkedList<Product> result = new LinkedList<>();
         for (String name : names) {
@@ -80,6 +144,9 @@ public class InventorySystem {
         return result;
     }
 
+    /**
+     * Remove product - O(log n)
+     */
     public boolean removeProduct(int productId) {
         Product product = findProductById(productId);
         if (product != null) {
@@ -94,6 +161,85 @@ public class InventorySystem {
         return false;
     }
 
+    /**
+     * Update product - O(log n)
+     */
+    public boolean updateProduct(int productId, String newName, double newPrice, int newStock) {
+        Product product = findProductById(productId);
+        if (product == null) {
+            System.out.println("Product not found: " + productId);
+            return false;
+        }
+        
+        if (newName != null && !newName.trim().isEmpty()) {
+            productsByName.delete(product.getName());
+            product.setName(newName);
+            productsByName.add(newName, product);
+        }
+        if (newPrice >= 0) {
+            product.setPrice(newPrice);
+        }
+        if (newStock >= 0) {
+            product.setStock(newStock);
+        }
+        
+        System.out.println("Product updated: " + productId);
+        return true;
+    }
+
+    /**
+     * Display all products - O(n)
+     */
+    public void displayAllProducts() {
+        if (products.isEmpty()) {
+            System.out.println("No products in the system");
+            return;
+        }
+        
+        System.out.println("\nALL PRODUCTS");
+        System.out.println("================");
+        displayProductsInOrder(products.getRoot());
+        System.out.println("================\n");
+    }
+    
+    private void displayProductsInOrder(AVLNode<Product> node) {
+        if (node == null) return;
+        displayProductsInOrder(node.left);
+        node.data.display();
+        System.out.println("----------------");
+        displayProductsInOrder(node.right);
+    }
+
+    /**
+     * Display products by name - O(n)
+     */
+    public void displayProductsByName() {
+        if (productsByName.isEmpty()) {
+            System.out.println("No products in the system");
+            return;
+        }
+        
+        System.out.println("\nALL PRODUCTS (BY NAME)");
+        System.out.println("================");
+        displayProductsByNameInOrder(productsByName.getRoot());
+        System.out.println("================\n");
+    }
+    
+    private void displayProductsByNameInOrder(AVLStringNode<Product> node) {
+        if (node == null) return;
+        displayProductsByNameInOrder(node.left);
+        node.data.display();
+        System.out.println("----------------");
+        displayProductsByNameInOrder(node.right);
+    }
+
+    // ============================================
+    // ORDER OPERATIONS - O(log n)
+    // ============================================
+    
+    /**
+     * Create new order - O(log n)
+     */
     public boolean createOrder(Order order) {
         if (order == null || !order.isValidOrder()) {
             System.out.println("Error: Invalid order data");
@@ -116,10 +262,16 @@ public class InventorySystem {
         return added;
     }
 
+    /**
+     * Find order by ID - O(log n)
+     */
     public Order findOrder(int orderId) {
         return orders.getData(orderId);
     }
 
+    /**
+     * Cancel order - O(log n)
+     */
     public boolean cancelOrder(int orderId) {
         Order order = findOrder(orderId);
         if (order == null) {
@@ -137,166 +289,51 @@ public class InventorySystem {
         return true;
     }
 
-    public LinkedList<Order> findOrdersBetweenDates(LocalDate startDate, LocalDate endDate) {
-        LinkedList<Order> result = new LinkedList<>();
-        collectOrdersBetweenDates(orders.getRoot(), startDate, endDate, result);
-        return result;
-    }
-    
-    private void collectOrdersBetweenDates(AVLNode<Order> node, LocalDate start, 
-                                          LocalDate end, LinkedList<Order> result) {
-        if (node == null) return;
-        
-        collectOrdersBetweenDates(node.left, start, end, result);
-        
-        if (node.data.isOrderedBetween(start, end)) {
-            result.addLast(node.data);
+    /**
+     * Update order status - O(log n)
+     */
+    public boolean updateOrderStatus(int orderId, String newStatus) {
+        Order order = findOrder(orderId);
+        if (order == null) {
+            System.out.println("Order not found: " + orderId);
+            return false;
         }
         
-        collectOrdersBetweenDates(node.right, start, end, result);
+        order.setStatus(newStatus);
+        System.out.println("Order status updated: " + orderId + " -> " + newStatus);
+        return true;
     }
 
-    public LinkedList<Product> findProductsInPriceRange(double minPrice, double maxPrice) {
-        LinkedList<Product> result = new LinkedList<>();
-        collectProductsInPriceRange(products.getRoot(), minPrice, maxPrice, result);
-        return result;
-    }
-    
-    private void collectProductsInPriceRange(AVLNode<Product> node, double min, 
-                                            double max, LinkedList<Product> result) {
-        if (node == null) return;
-        
-        collectProductsInPriceRange(node.left, min, max, result);
-        
-        if (node.data.getPrice() >= min && node.data.getPrice() <= max) {
-            result.addLast(node.data);
-        }
-        
-        collectProductsInPriceRange(node.right, min, max, result);
-    }
-
-    public LinkedList<Product> findProductsInIdRange(int minId, int maxId) {
-        return products.getRange(minId, maxId);
-    }
-
-    public LinkedList<Product> findProductsInNameRange(String startName, String endName) {
-        return productsByName.getRange(startName, endName);
-    }
-
-    public void displayAllCustomers() {
-        if (customers.isEmpty()) {
-            System.out.println("No customers in the system");
+    /**
+     * Display all orders - O(n)
+     */
+    public void displayAllOrders() {
+        if (orders.isEmpty()) {
+            System.out.println("No orders in the system");
             return;
         }
         
-        System.out.println("\nALL CUSTOMERS");
+        System.out.println("\nALL ORDERS");
         System.out.println("================");
-        displayCustomersInOrder(customers.getRoot());
+        displayOrdersInOrder(orders.getRoot());
         System.out.println("================\n");
     }
     
-    private void displayCustomersInOrder(AVLNode<Customer> node) {
+    private void displayOrdersInOrder(AVLNode<Order> node) {
         if (node == null) return;
-        displayCustomersInOrder(node.left);
+        displayOrdersInOrder(node.left);
         node.data.display();
         System.out.println("----------------");
-        displayCustomersInOrder(node.right);
+        displayOrdersInOrder(node.right);
     }
 
-    public void displayAllProducts() {
-        if (products.isEmpty()) {
-            System.out.println("No products in the system");
-            return;
-        }
-        
-        System.out.println("\nALL PRODUCTS");
-        System.out.println("================");
-        displayProductsInOrder(products.getRoot());
-        System.out.println("================\n");
-    }
+    // ============================================
+    // REVIEW OPERATIONS
+    // ============================================
     
-    private void displayProductsInOrder(AVLNode<Product> node) {
-        if (node == null) return;
-        displayProductsInOrder(node.left);
-        node.data.display();
-        System.out.println("----------------");
-        displayProductsInOrder(node.right);
-    }
-
-    public void displayProductsByName() {
-        if (productsByName.isEmpty()) {
-            System.out.println("No products in the system");
-            return;
-        }
-        
-        System.out.println("\nALL PRODUCTS (BY NAME)");
-        System.out.println("================");
-        displayProductsByNameInOrder(productsByName.getRoot());
-        System.out.println("================\n");
-    }
-    
-    private void displayProductsByNameInOrder(AVLStringNode<Product> node) {
-        if (node == null) return;
-        displayProductsByNameInOrder(node.left);
-        node.data.display();
-        System.out.println("----------------");
-        displayProductsByNameInOrder(node.right);
-    }
-
-    public void displayAVLStatistics() {
-        System.out.println("\nAVL TREE STATISTICS");
-        System.out.println("====================");
-        System.out.println("Customers Tree Height: " + customers.getHeight());
-        System.out.println("Products Tree Height:  " + products.getHeight());
-        System.out.println("Orders Tree Height:    " + orders.getHeight());
-        System.out.println("Products by Name Tree Height: " + productsByName.getHeight());
-        System.out.println("Total Products by Name: " + productsByName.countNodes() + " nodes");
-        System.out.println("====================\n");
-    }
-
-    public void displaySystemStatistics() {
-        System.out.println("\nSYSTEM STATISTICS (FULL AVL)");
-        System.out.println("====================");
-        System.out.println("Total Customers:  " + customers.countNodes());
-        System.out.println("Total Products:   " + products.countNodes());
-        System.out.println("Total Orders:     " + orders.countNodes());
-        System.out.println("Total Reviews:    " + reviews.size());
-        System.out.println("Total Revenue:    $" + String.format("%.2f", calculateTotalRevenue()));
-        System.out.println("Out of Stock:     " + getOutOfStockProducts().size());
-        
-        displayAVLStatistics();
-    }
-
-    private double calculateTotalRevenue() {
-        return calculateRevenueHelper(orders.getRoot());
-    }
-
-    private double calculateRevenueHelper(AVLNode<Order> node) {
-        if (node == null) return 0.0;
-        
-        double revenue = 0.0;
-        if (!node.data.getStatus().equalsIgnoreCase("canceled")) {
-            revenue = node.data.getTotalPrice();
-        }
-        
-        return revenue + calculateRevenueHelper(node.left) + calculateRevenueHelper(node.right);
-    }
-
-    public LinkedList<Product> getOutOfStockProducts() {
-        LinkedList<Product> outOfStock = new LinkedList<>();
-        collectOutOfStock(products.getRoot(), outOfStock);
-        return outOfStock;
-    }
-    
-    private void collectOutOfStock(AVLNode<Product> node, LinkedList<Product> list) {
-        if (node == null) return;
-        collectOutOfStock(node.left, list);
-        if (node.data.isOutOfStock()) {
-            list.addLast(node.data);
-        }
-        collectOutOfStock(node.right, list);
-    }
-
+    /**
+     * Add review
+     */
     public boolean addReview(Review review) {
         if (review == null || !review.isValidReview()) {
             System.out.println("Error: Invalid review data");
@@ -322,6 +359,110 @@ public class InventorySystem {
         return true;
     }
 
+    /**
+     * Edit review
+     */
+    public boolean editReview(int reviewId, int newRating, String newComment) {
+        if (reviews.empty()) {
+            System.out.println("No reviews in the system");
+            return false;
+        }
+        
+        reviews.findFirst();
+        while (true) {
+            Review review = reviews.retrieve();
+            if (review.getReviewId() == reviewId) {
+                if (newRating >= 1 && newRating <= 5) {
+                    review.setRating(newRating);
+                }
+                if (newComment != null) {
+                    review.setComment(newComment);
+                }
+                System.out.println("Review updated successfully");
+                return true;
+            }
+            if (reviews.last()) break;
+            reviews.findNext();
+        }
+        
+        System.out.println("Review not found: " + reviewId);
+        return false;
+    }
+
+    /**
+     * Get customer reviews
+     */
+    public LinkedList<Review> getCustomerReviews(int customerId) {
+        LinkedList<Review> customerReviews = new LinkedList<>();
+        
+        if (reviews.empty()) {
+            return customerReviews;
+        }
+        
+        reviews.findFirst();
+        while (true) {
+            Review review = reviews.retrieve();
+            if (review.getCustomerId() == customerId) {
+                customerReviews.addLast(review);
+            }
+            if (reviews.last()) break;
+            reviews.findNext();
+        }
+        
+        return customerReviews;
+    }
+
+    // ============================================
+    // ADVANCED QUERIES (PHASE 2 REQUIREMENTS)
+    // ============================================
+    
+    /**
+     * ADVANCED QUERY 1: Find orders between two dates - O(n)
+     */
+    public LinkedList<Order> findOrdersBetweenDates(LocalDate startDate, LocalDate endDate) {
+        LinkedList<Order> result = new LinkedList<>();
+        collectOrdersBetweenDates(orders.getRoot(), startDate, endDate, result);
+        return result;
+    }
+    
+    private void collectOrdersBetweenDates(AVLNode<Order> node, LocalDate start, 
+                                          LocalDate end, LinkedList<Order> result) {
+        if (node == null) return;
+        
+        collectOrdersBetweenDates(node.left, start, end, result);
+        
+        if (node.data.isOrderedBetween(start, end)) {
+            result.addLast(node.data);
+        }
+        
+        collectOrdersBetweenDates(node.right, start, end, result);
+    }
+
+    /**
+     * ADVANCED QUERY 2: Products within price range - O(n)
+     */
+    public LinkedList<Product> findProductsInPriceRange(double minPrice, double maxPrice) {
+        LinkedList<Product> result = new LinkedList<>();
+        collectProductsInPriceRange(products.getRoot(), minPrice, maxPrice, result);
+        return result;
+    }
+    
+    private void collectProductsInPriceRange(AVLNode<Product> node, double min, 
+                                            double max, LinkedList<Product> result) {
+        if (node == null) return;
+        
+        collectProductsInPriceRange(node.left, min, max, result);
+        
+        if (node.data.getPrice() >= min && node.data.getPrice() <= max) {
+            result.addLast(node.data);
+        }
+        
+        collectProductsInPriceRange(node.right, min, max, result);
+    }
+
+    /**
+     * ADVANCED QUERY 3: Top 3 products by rating - O(n)
+     */
     public LinkedList<Product> getTop3Products() {
         if (products.isEmpty()) {
             return new LinkedList<>();
@@ -409,6 +550,322 @@ public class InventorySystem {
         System.out.println("====================\n");
     }
 
+    /**
+     * ADVANCED QUERY 4: Customers alphabetically - O(n log n)
+     */
+    public void displayCustomersAlphabetically() {
+        if (customers.isEmpty()) {
+            System.out.println("No customers in the system");
+            return;
+        }
+        
+        LinkedList<Customer> allCustomers = new LinkedList<>();
+        collectAllCustomers(customers.getRoot(), allCustomers);
+        
+        sortCustomersByName(allCustomers);
+        
+        System.out.println("\nCUSTOMERS (ALPHABETICALLY)");
+        System.out.println("================");
+        int count = 0;
+        allCustomers.findFirst();
+        while (true) {
+            count++;
+            Customer c = allCustomers.retrieve();
+            System.out.println(count + ". " + c.getName() + 
+                             " (ID: " + c.getCustomerId() + 
+                             ", Email: " + c.getEmail() + ")");
+            if (allCustomers.last()) break;
+            allCustomers.findNext();
+        }
+        System.out.println("================\n");
+    }
+    
+    private void collectAllCustomers(AVLNode<Customer> node, LinkedList<Customer> list) {
+        if (node == null) return;
+        collectAllCustomers(node.left, list);
+        list.addLast(node.data);
+        collectAllCustomers(node.right, list);
+    }
+    
+    private void sortCustomersByName(LinkedList<Customer> list) {
+        if (list.empty()) return;
+        
+        boolean swapped;
+        do {
+            swapped = false;
+            list.findFirst();
+            
+            while (!list.last()) {
+                Customer current = list.retrieve();
+                list.findNext();
+                Customer next = list.retrieve();
+                
+                if (current.getName().compareToIgnoreCase(next.getName()) > 0) {
+                    String tempName = current.getName();
+                    String tempEmail = current.getEmail();
+                    int tempId = current.getCustomerId();
+                    
+                    current.setName(next.getName());
+                    current.setEmail(next.getEmail());
+                    current.setCustomerId(next.getCustomerId());
+                    
+                    next.setName(tempName);
+                    next.setEmail(tempEmail);
+                    next.setCustomerId(tempId);
+                    
+                    swapped = true;
+                }
+            }
+        } while (swapped);
+    }
+
+    /**
+     * ADVANCED QUERY 5: Customers who reviewed a product - O(n)
+     */
+    public void displayCustomersWhoReviewedProduct(int productId) {
+        Product product = findProductById(productId);
+        if (product == null) {
+            System.out.println("Product not found: " + productId);
+            return;
+        }
+        
+        System.out.println("\nCUSTOMERS WHO REVIEWED: " + product.getName());
+        System.out.println("================");
+        
+        if (reviews.empty()) {
+            System.out.println("No reviews found");
+            System.out.println("================\n");
+            return;
+        }
+        
+        LinkedList<ReviewerPair> pairs = new LinkedList<>();
+        
+        reviews.findFirst();
+        while (true) {
+            Review review = reviews.retrieve();
+            if (review.getProductId() == productId) {
+                Customer customer = findCustomer(review.getCustomerId());
+                if (customer != null) {
+                    pairs.addLast(new ReviewerPair(customer, review));
+                }
+            }
+            if (reviews.last()) break;
+            reviews.findNext();
+        }
+        
+        if (pairs.empty()) {
+            System.out.println("No reviews for this product");
+        } else {
+            int count = 0;
+            pairs.findFirst();
+            while (true) {
+                count++;
+                ReviewerPair pair = pairs.retrieve();
+                System.out.println(count + ". " + pair.customer.getName() +
+                                 " (ID: " + pair.customer.getCustomerId() + ")");
+                System.out.println("   Rating: " + pair.review.getRating() + "/5");
+                System.out.println("   Comment: " + pair.review.getComment());
+                System.out.println("   ----------------");
+                if (pairs.last()) break;
+                pairs.findNext();
+            }
+        }
+        System.out.println("================\n");
+    }
+    
+    private class ReviewerPair {
+        Customer customer;
+        Review review;
+        
+        ReviewerPair(Customer c, Review r) {
+            this.customer = c;
+            this.review = r;
+        }
+    }
+
+    // ============================================
+    // RANGE QUERY OPERATIONS - O(log n + m)
+    // ============================================
+    
+    /**
+     * Range query for products by ID - O(log n + m)
+     */
+    public LinkedList<Product> findProductsInIdRange(int minId, int maxId) {
+        return products.getRange(minId, maxId);
+    }
+
+    /**
+     * Range query for products by name - O(log n + m)
+     */
+    public LinkedList<Product> findProductsInNameRange(String startName, String endName) {
+        return productsByName.getRange(startName, endName);
+    }
+
+    // ============================================
+    // STOCK MANAGEMENT OPERATIONS
+    // ============================================
+    
+    /**
+     * Get out of stock products - O(n)
+     */
+    public LinkedList<Product> getOutOfStockProducts() {
+        LinkedList<Product> outOfStock = new LinkedList<>();
+        collectOutOfStock(products.getRoot(), outOfStock);
+        return outOfStock;
+    }
+    
+    private void collectOutOfStock(AVLNode<Product> node, LinkedList<Product> list) {
+        if (node == null) return;
+        collectOutOfStock(node.left, list);
+        if (node.data.isOutOfStock()) {
+            list.addLast(node.data);
+        }
+        collectOutOfStock(node.right, list);
+    }
+
+    /**
+     * Display out of stock products - O(n)
+     */
+    public void displayOutOfStockProducts() {
+        LinkedList<Product> outOfStock = getOutOfStockProducts();
+        
+        if (outOfStock.empty()) {
+            System.out.println("All products are in stock");
+            return;
+        }
+        
+        System.out.println("\nOUT OF STOCK PRODUCTS");
+        System.out.println("================");
+        int count = 0;
+        outOfStock.findFirst();
+        while (true) {
+            count++;
+            Product p = outOfStock.retrieve();
+            System.out.println(count + ". " + p.getName() + " (ID: " + p.getProductId() + ")");
+            if (outOfStock.last()) break;
+            outOfStock.findNext();
+        }
+        System.out.println("================\n");
+    }
+
+    // ============================================
+    // STATISTICS OPERATIONS
+    // ============================================
+    
+    /**
+     * Get total customers count - O(1)
+     */
+    public int getTotalCustomers() {
+        return customers.countNodes();
+    }
+
+    /**
+     * Get total orders count - O(1)
+     */
+    public int getTotalOrders() {
+        return orders.countNodes();
+    }
+
+    /**
+     * Get total products count - O(1)
+     */
+    public int getTotalProducts() {
+        return products.countNodes();
+    }
+
+    /**
+     * Get total reviews count - O(1)
+     */
+    public int getTotalReviews() {
+        return reviews.size();
+    }
+
+    /**
+     * Calculate total revenue - O(n)
+     */
+    public double calculateTotalRevenue() {
+        return calculateRevenueHelper(orders.getRoot());
+    }
+
+    private double calculateRevenueHelper(AVLNode<Order> node) {
+        if (node == null) return 0.0;
+        
+        double revenue = 0.0;
+        if (!node.data.getStatus().equalsIgnoreCase("canceled")) {
+            revenue = node.data.getTotalPrice();
+        }
+        
+        return revenue + calculateRevenueHelper(node.left) + calculateRevenueHelper(node.right);
+    }
+
+    /**
+     * Display AVL tree statistics - O(1)
+     */
+    public void displayAVLStatistics() {
+        System.out.println("\nAVL TREE STATISTICS");
+        System.out.println("====================");
+        System.out.println("Customers Tree Height: " + customers.getHeight());
+        System.out.println("Products Tree Height:  " + products.getHeight());
+        System.out.println("Orders Tree Height:    " + orders.getHeight());
+        System.out.println("Products by Name Tree Height: " + productsByName.getHeight());
+        System.out.println("Total Products by Name: " + productsByName.countNodes() + " nodes");
+        System.out.println("====================\n");
+    }
+
+    /**
+     * Display system statistics - O(n)
+     */
+    public void displaySystemStatistics() {
+        System.out.println("\nSYSTEM STATISTICS (FULL AVL)");
+        System.out.println("====================");
+        System.out.println("Total Customers:  " + getTotalCustomers());
+        System.out.println("Total Products:   " + getTotalProducts());
+        System.out.println("Total Orders:     " + getTotalOrders());
+        System.out.println("Total Reviews:    " + getTotalReviews());
+        System.out.println("Total Revenue:    $" + String.format("%.2f", calculateTotalRevenue()));
+        System.out.println("Out of Stock:     " + getOutOfStockProducts().size());
+        
+        displayAVLStatistics();
+    }
+
+    // ============================================
+    // HELPER METHODS
+    // ============================================
+    
+    private void removeCustomerOrders(int customerId) {
+        removeCustomerOrdersHelper(orders.getRoot(), customerId);
+    }
+
+    private void removeCustomerOrdersHelper(AVLNode<Order> node, int customerId) {
+        if (node == null) return;
+        
+        removeCustomerOrdersHelper(node.left, customerId);
+        
+        if (node.data.getCustomerId() == customerId) {
+            orders.delete(node.data.getOrderId());
+        }
+        
+        removeCustomerOrdersHelper(node.right, customerId);
+    }
+
+    private boolean isProductInList(LinkedList<Product> list, int productId) {
+        if (list.empty()) return false;
+        
+        list.findFirst();
+        while (true) {
+            if (list.retrieve().getProductId() == productId) {
+                return true;
+            }
+            if (list.last()) break;
+            list.findNext();
+        }
+        return false;
+    }
+
+    // ============================================
+    // CSV FILE LOADING OPERATIONS
+    // ============================================
+    
     public void loadCustomersFromCSV(String filename) {
         try {
             File file = new File(filename);
@@ -478,5 +935,98 @@ public class InventorySystem {
         } catch (FileNotFoundException e) {
             System.out.println("File not found: " + filename);
         }
+    }
+
+    public void loadOrdersFromCSV(String filename) {
+        try {
+            File file = new File(filename);
+            Scanner scanner = new Scanner(file);
+            
+            System.out.println("Loading orders from: " + filename);
+            
+            if (scanner.hasNextLine()) scanner.nextLine();
+            
+            int count = 0;
+            while (scanner.hasNextLine()) {
+                String line = scanner.nextLine().trim();
+                if (!line.isEmpty()) {
+                    String[] parts = line.split(",");
+                    if (parts.length >= 6) {
+                        int orderId = Integer.parseInt(parts[0].trim());
+                        int customerId = Integer.parseInt(parts[1].trim());
+                        String productIds = parts[2].trim();
+                        double totalPrice = Double.parseDouble(parts[3].trim());
+                        LocalDate orderDate = LocalDate.parse(parts[4].trim(), DATE_FORMAT);
+                        String status = parts[5].trim();
+                        
+                        Order order = new Order(orderId, customerId, productIds, 
+                                              totalPrice, orderDate, status);
+                        if (createOrder(order)) {
+                            count++;
+                        }
+                    }
+                }
+            }
+            
+            scanner.close();
+            System.out.println("Loaded " + count + " orders\n");
+            
+        } catch (FileNotFoundException e) {
+            System.out.println("File not found: " + filename);
+        }
+    }
+
+    public void loadReviewsFromCSV(String filename) {
+        try {
+            File file = new File(filename);
+            Scanner scanner = new Scanner(file);
+            
+            System.out.println("Loading reviews from: " + filename);
+            
+            if (scanner.hasNextLine()) scanner.nextLine();
+            
+            int count = 0;
+            while (scanner.hasNextLine()) {
+                String line = scanner.nextLine().trim();
+                if (!line.isEmpty()) {
+                    String[] parts = line.split(",", 5);
+                    if (parts.length >= 5) {
+                        int reviewId = Integer.parseInt(parts[0].trim());
+                        int productId = Integer.parseInt(parts[1].trim());
+                        int customerId = Integer.parseInt(parts[2].trim());
+                        int rating = Integer.parseInt(parts[3].trim());
+                        String comment = parts[4].trim();
+                        
+                        Review review = new Review(reviewId, productId, customerId, rating, comment);
+                        if (addReview(review)) {
+                            count++;
+                        }
+                    }
+                }
+            }
+            
+            scanner.close();
+            System.out.println("Loaded " + count + " reviews\n");
+            
+        } catch (FileNotFoundException e) {
+            System.out.println("File not found: " + filename);
+        }
+    }
+
+    /**
+     * Load all data from CSV files
+     */
+    public void loadAllDataFromCSV(String customersFile, String productsFile, 
+                                   String ordersFile, String reviewsFile) {
+        System.out.println("\nLOADING ALL DATA FROM CSV FILES");
+        System.out.println("================================\n");
+        
+        loadCustomersFromCSV(customersFile);
+        loadProductsFromCSV(productsFile);
+        loadOrdersFromCSV(ordersFile);
+        loadReviewsFromCSV(reviewsFile);
+        
+        System.out.println("\nALL DATA LOADED SUCCESSFULLY!");
+        System.out.println("================================\n");
     }
 }

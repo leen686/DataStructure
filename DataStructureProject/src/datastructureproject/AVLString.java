@@ -64,6 +64,7 @@ public class AVLString<T> {
         return y;
     }
     
+    // ============ BASIC OPERATIONS ============
     public boolean isEmpty() {
         return root == null;
     }
@@ -76,6 +77,7 @@ public class AVLString<T> {
         return root;
     }
     
+    // ============ SEARCH OPERATIONS ============
     public boolean search(String key) {
         if (root == null) return false;
         
@@ -104,6 +106,7 @@ public class AVLString<T> {
         return null;
     }
     
+    // ============ INSERT OPERATION ============
     public boolean add(String key, T value) {
         root = insert(root, key, value);
         return search(key);
@@ -129,6 +132,7 @@ public class AVLString<T> {
         return balanceNode(node);
     }
     
+    // ============ DELETE OPERATION ============
     public boolean delete(String key) {
         int initialSize = countNodes();
         root = deleteNode(root, key);
@@ -168,6 +172,7 @@ public class AVLString<T> {
         return node;
     }
     
+    // ============ BALANCING OPERATIONS ============
     private AVLStringNode<T> balanceNode(AVLStringNode<T> node) {
         updateHeight(node);
         int balance = getBalance(node);
@@ -193,6 +198,7 @@ public class AVLString<T> {
         return node;
     }
     
+    // ============ TRAVERSAL OPERATIONS ============
     public void displayInOrder() {
         if (root == null) {
             System.out.println("Tree is empty");
@@ -208,6 +214,7 @@ public class AVLString<T> {
         inOrderTraversal(node.right);
     }
     
+    // ============ TREE STATISTICS ============
     public int countNodes() {
         return countNodesHelper(root);
     }
@@ -220,6 +227,7 @@ public class AVLString<T> {
         return height(root);
     }
     
+    // ============ RANGE QUERY OPERATIONS ============
     public LinkedList<T> getRange(String minKey, String maxKey) {
         LinkedList<T> result = new LinkedList<>();
         collectRange(root, minKey.toLowerCase(), maxKey.toLowerCase(), result);

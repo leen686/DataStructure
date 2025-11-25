@@ -64,6 +64,7 @@ public class AVL_int<T> {
         return y;
     }
     
+    // ============ BASIC OPERATIONS ============
     public boolean isEmpty() {
         return root == null;
     }
@@ -76,6 +77,7 @@ public class AVL_int<T> {
         return root;
     }
     
+    // ============ SEARCH OPERATIONS ============
     public boolean search(int key) {
         if (root == null) return false;
         
@@ -97,6 +99,7 @@ public class AVL_int<T> {
         return search(key) ? current.data : null;
     }
     
+    // ============ INSERT OPERATION ============
     public boolean add(int key, T value) {
         root = insert(root, key, value);
         return search(key);
@@ -119,6 +122,7 @@ public class AVL_int<T> {
         return balanceNode(node);
     }
     
+    // ============ DELETE OPERATION ============
     public boolean delete(int key) {
         int initialSize = countNodes();
         root = deleteNode(root, key);
@@ -155,6 +159,7 @@ public class AVL_int<T> {
         return node;
     }
     
+    // ============ BALANCING OPERATIONS ============
     private AVLNode<T> balanceNode(AVLNode<T> node) {
         updateHeight(node);
         int balance = getBalance(node);
@@ -180,6 +185,7 @@ public class AVL_int<T> {
         return node;
     }
     
+    // ============ UPDATE OPERATION ============
     public boolean update(int key, T newValue) {
         if (search(key)) {
             current.data = newValue;
@@ -188,6 +194,7 @@ public class AVL_int<T> {
         return false;
     }
     
+    // ============ TRAVERSAL OPERATIONS ============
     public void displayInOrder() {
         if (root == null) {
             System.out.println("Tree is empty");
@@ -218,6 +225,7 @@ public class AVL_int<T> {
         preOrderTraversal(node.right);
     }
     
+    // ============ TREE STATISTICS ============
     public int countNodes() {
         return countNodesHelper(root);
     }
@@ -244,6 +252,7 @@ public class AVL_int<T> {
         return temp.key;
     }
     
+    // ============ RANGE QUERY OPERATIONS ============
     public LinkedList<T> getRange(int minKey, int maxKey) {
         LinkedList<T> result = new LinkedList<>();
         collectRange(root, minKey, maxKey, result);
