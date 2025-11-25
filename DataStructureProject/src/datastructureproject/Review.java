@@ -7,6 +7,7 @@ public class Review {
     private int rating;
     private String comment;
     
+    // Constructor
     public Review(int reviewId, int productId, int customerId, int rating, String comment) {
         this.reviewId = reviewId;
         this.productId = productId;
@@ -14,78 +15,110 @@ public class Review {
         this.rating = rating;
         this.comment = comment;
     }
-
-    //  Getters 
     
-    public int getReviewId() { 
-        return reviewId; 
+    // Getters
+    public int getReviewId() {
+        return reviewId;
     }
     
-    public int getProductId() { 
-        return productId; 
+    public int getProductId() {
+        return productId;
     }
     
-    public int getCustomerId() { 
-        return customerId; 
+    public int getCustomerId() {
+        return customerId;
     }
     
-    public int getRating() { 
-        return rating; 
+    public int getRating() {
+        return rating;
     }
     
-    public String getComment() { 
-        return comment; 
-    }
-
-    //  Setters 
-    
-    public void setReviewId(int reviewId) {
-        this.reviewId = reviewId;
+    public String getComment() {
+        return comment;
     }
     
-    public void setProductId(int productId) {
-        this.productId = productId;
-    }
-    
-    public void setCustomerId(int customerId) {
-        this.customerId = customerId;
-    }
-    
-    public void setRating(int rating) { 
+    // Setters
+    public void setRating(int rating) {
         if (rating >= 1 && rating <= 5) {
             this.rating = rating;
-        } else {
-            System.out.println("Rating must be between 1 and 5");
         }
     }
     
-    public void setComment(String comment) { 
-        this.comment = comment; 
+    public void setComment(String comment) {
+        this.comment = comment;
     }
-
-    //  Validation 
     
-    public boolean isValidReview() { 
-        return reviewId > 0 &&
-               productId > 0 &&
-               customerId > 0 &&
-               rating >= 1 && rating <= 5 &&
-               comment != null;
+    // Methods
+    public boolean isValidReview() {
+        return reviewId > 0 && 
+               productId > 0 && 
+               customerId > 0 && 
+               rating >= 1 && rating <= 5 && 
+               comment != null && !comment.trim().isEmpty();
     }
-
-    //  Display 
     
-    public void display() { 
-        System.out.println("  Review ID: " + reviewId);
-        System.out.println("  Customer ID: " + customerId);
-        System.out.println("  Rating: " + rating + "/5");
-        System.out.println("  Comment: " + comment);
+    public boolean isPositive() {
+        return rating >= 4;
     }
-
+    
+    public boolean isNegative() {
+        return rating <= 2;
+    }
+    
+    public boolean isNeutral() {
+        return rating == 3;
+    }
+    
+    public String getRatingStars() {
+        StringBuilder stars = new StringBuilder();
+        for (int i = 0; i < rating; i++) {
+            stars.append("★");
+        }
+        for (int i = rating; i < 5; i++) {
+            stars.append("☆");
+        }
+        return stars.toString();
+    }
+    
+    // Display methods
+    public void displayReview() {
+        System.out.println("========================================");
+        System.out.println("Review ID: " + reviewId);
+        System.out.println("Product ID: " + productId);
+        System.out.println("Customer ID: " + customerId);
+        System.out.println("Rating: " + rating + "/5 " + getRatingStars());
+        System.out.println("Comment: " + comment);
+        System.out.println("========================================");
+    }
+    
+    public void displaySummary() {
+        System.out.println("Review #" + reviewId + 
+                         " (Product: " + productId + 
+                         ", Customer: " + customerId + ")");
+        System.out.println("Rating: " + getRatingStars() + 
+                         " (" + rating + "/5)");
+        System.out.println("Comment: " + 
+                         (comment.length() > 50 ? 
+                          comment.substring(0, 50) + "..." : 
+                          comment));
+    }
+    
+    public void displayBrief() {
+        System.out.println("Review #" + reviewId + 
+                         " - Rating: " + rating + "/5 - " + 
+                         "\"" + (comment.length() > 30 ? 
+                                comment.substring(0, 30) + "..." : 
+                                comment) + "\"");
+    }
+    
     @Override
     public String toString() {
-        return String.format("Review[ID:%d, Product:%d, Customer:%d, Rating:%d/5]",
-                reviewId, productId, customerId, rating);
+        return "Review{" +
+               "ID=" + reviewId +
+               ", productID=" + productId +
+               ", customerID=" + customerId +
+               ", rating=" + rating +
+               ", comment='" + comment + '\'' +
+               '}';
     }
 }
-
